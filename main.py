@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def my_form():
-    return render_template('index.html', moves=[])
+    return render_template('index.html', moves=[], pgn='')
 
 @app.route('/', methods=['POST'])
 def my_form_post():
@@ -131,7 +131,7 @@ def my_form_post():
             # print(stockfish.get_top_moves(3))
             # print(stockfish.get_best_move())
     # return output
-    return render_template('index.html', moves=moves)
+    return render_template('index.html', moves=moves,pgn=pgn)
 
 
 
