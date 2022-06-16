@@ -25,7 +25,7 @@ def my_form_post():
 
     #.\pgn-extract.exe --quiet -C --fencomments -w 100000 --output game-fen.pgn game.pgn
     os.system('.\\pgn-extract.exe --quiet -C --fencomments -w 100000 --output game-fen.pgn game.pgn')
-    stockfish = Stockfish('stockfish_15_x64_avx2.exe') #path="/Users/zhelyabuzhsky/Work/stockfish/stockfish-9-64")
+    stockfish = Stockfish('stockfish_15_x64_popcnt.exe') #path="/Users/zhelyabuzhsky/Work/stockfish/stockfish-9-64")
     # stockfish.set_fen_position("rnbqkb1r/ppp2ppp/3p4/4P3/4n3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 5")
     # print(stockfish.get_top_moves(3))
     
