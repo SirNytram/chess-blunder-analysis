@@ -1,27 +1,17 @@
-[Event "Let's Play!"]
+[Event "Live Chess"]
 [Site "Chess.com"]
-[Date "2022.06.02"]
-[Round "-"]
-[White "CubixL3"]
+[Date "2022.05.20"]
+[Round "?"]
+[White "panini96"]
 [Black "SirNytram"]
-[Result "1-0"]
-[CurrentPosition "5r1k/p1p3Qp/p2p4/5r2/8/8/PP4RP/6K1 b - - 0 30"]
-[Timezone "UTC"]
-[ECO "C41"]
-[ECOUrl "https://www.chess.com/openings/Philidor-Defense-3.d4"]
-[UTCDate "2022.06.02"]
-[UTCTime "12:54:35"]
-[WhiteElo "1200"]
-[BlackElo "400"]
-[TimeControl "1/259200"]
-[Termination "CubixL3 won by checkmate"]
-[StartTime "12:54:35"]
-[EndDate "2022.06.15"]
-[EndTime "02:10:21"]
-[Link "https://www.chess.com/game/daily/406438147"]
+[Result "0-1"]
+[ECO "C68"]
+[WhiteElo "435"]
+[BlackElo "575"]
+[TimeControl "600"]
+[EndTime "8:04:45 PDT"]
+[Termination "SirNytram won by resignation"]
 
-1. e4 d6 2. d4 e5 3. Nf3 Nf6 4. dxe5 Nxe4 5. Bg5 Nxg5 6. Nxg5 Qxg5 7. Nc3 Qxe5+
-8. Qe2 Bg4 9. f3 Bf5 10. g4 Bxc2 11. Nd5 Na6 12. f4 Qxe2+ 13. Bxe2 Be4 14. Bxa6
-Bxd5 15. O-O bxa6 16. Rae1+ Be7 17. Re3 Bc4 18. Rfe1 Be6 19. f5 Bh4 20. R1e2 O-O
-21. fxe6 Bf6 22. e7 Bd4 23. e8=Q Bxe3+ 24. Qxe3 f5 25. Qe6+ Kh8 26. gxf5 Rf6 27.
-Qe8+ Rf8 28. Qe7 Rxf5 29. Rg2 Raf8 30. Qxg7# 1-0
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 bxc6 5. Nxe5 Qf6 6. d4 c5 7. O-O Bb7 8.
+Qg4 Qe6 9. Qxe6+ fxe6 10. Nc3 cxd4 11. Ne2 Bc5 12. f3 d3+ 13. Nd4 Bxd4+ 14. Kh1
+Bxe5 15. cxd3 Bc6 16. a4 Nf6 17. Ra3 Rb8 18. Rc3 Bxc3 19. bxc3 Bxa4 0-1

@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>Chess Blunder Analysis</title>
+  </head>
+  <body>
+    <div>
+      <h1>Chess Blunder Analysis</h1>
+      <form method="POST">
+        <textarea name="pgn" rows="20" cols="50"></textarea>
+        <!-- <input name="text"> -->
+        <input type="submit">
+      </form>
+    </div>  
+    <div>
+      <table border=1 style="border-collapse:collapse">
+        <thead>
+          <th>action</th>
+          <th>move no</th>
+          <th>score</th>
+          <th>move</th>
+          <th>top1</th>
+          <th>top2</th>
+          <th>top3</th>
+          <th>score diff</th>
+        </thead>
+        {% for move in moves %}
+        <tr>
+          <td>{{move[0]}}</td>
+          <td>{{move[1]}}</td>
+          <td>{{move[2]}}</td>
+          <td>{{move[3]}}{{move[4]}}</td>
+          {% for top_move in move[5] %}
+          <td>{{top_move[0]}}{{top_move[1]}} ({{top_move[2]}})</td>
+          {% endfor %}
+
+          <td>{{move[6]}}</td>
+        </tr>
+        {% endfor %}
+
+      </table>
+    </div>
+  </body>
+</html>
