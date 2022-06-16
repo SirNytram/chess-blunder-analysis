@@ -1,38 +1,91 @@
 <html>
   <head>
     <title>Chess Blunder Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   </head>
   <body>
     <div>
       <h1>Chess Blunder Analysis</h1>
       <form method="POST">
         <textarea name="pgn" rows="20" cols="50">{{pgn}}</textarea>
+        <input type="checkbox" name="detailed">Detailed
         <input type="submit">
       </form>
     </div>  
+
+    <div>
+      <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+      const labels = [
+      {% for move in moves %}
+        '{{move[1]}}',
+        {% endfor %}
+      ];
+    
+      const data = {
+        labels: labels,
+        datasets: [
+        {
+          label: 'Score',
+          backgroundColor: 'rgb(255, 99, 132)',
+          borderColor: 'rgb(255, 99, 132)',
+          data: [ {% for move in moves %}{{move[7]}},{% endfor %} ],
+        },
+        {
+          label: 'Mid Line',
+          borderColor: "#3e95cd",
+          data: [ {% for move in moves %}0,{% endfor %} ],
+        }
+      ]
+      };
+    
+      const config = {
+        type: 'line',
+        data: data,
+        options: {}
+      };
+    </script>
+
+    <script>
+      const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+      );
+    </script> 
+
+
+
+
+
+   
     <div>
       <table border=1 style="border-collapse:collapse">
         <thead>
-          <th>action</th>
           <th>move no</th>
           <th>score</th>
           <th>move</th>
-          <th>top1</th>
-          <th>top2</th>
-          <th>top3</th>
+          <th></th>
+          <th></th>
+          <th></th>
           <th>score diff</th>
+          <th></th>
+          <th>comment</th>
         </thead>
         {% for move in moves %}
         <tr>
-          <td>{{move[0]}}</td>
           <td>{{move[1]}}</td>
           <td>{{move[2]}}</td>
           <td>{{move[3]}}{{move[4]}}</td>
           {% for top_move in move[5] %}
-          <td>{{top_move[0]}}{{top_move[1]}} ({{top_move[2]}})</td>
+          <td>{{top_move[0]}}{{top_move[1]}} {{top_move[2]}}</td>
           {% endfor %}
 
           <td>{{move[6]}}</td>
+          <td></td>
+          <td>{{move[0]}}</td>
         </tr>
         {% endfor %}
 
