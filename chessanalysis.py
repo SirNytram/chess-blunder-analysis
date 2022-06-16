@@ -1,10 +1,10 @@
 import pyperclip
 import os
 
-# clipboard = pyperclip.paste()
-# f = open('game.pgn', 'w')
-# f.write(clipboard)
-# f.close()
+clipboard = pyperclip.paste()
+f = open('game.pgn', 'w')
+f.write(clipboard)
+f.close()
 
 #.\pgn-extract.exe --quiet -C --fencomments -w 100000 --output game-fen.pgn game.pgn
 os.system('.\\pgn-extract.exe --quiet -C --fencomments -w 100000 --output game-fen.pgn game.pgn')
@@ -28,6 +28,8 @@ with open(fn, encoding='utf-8') as h:
     prev_score = None
     prev_fen = None
     moveno = 1.0
+
+    
     for node in game.mainline():
         fen = node.comment
         # com = comment.split('\n')
@@ -40,7 +42,7 @@ with open(fn, encoding='utf-8') as h:
         score = stockfish.get_evaluation()
         square = f'{node.move}'[2:4]
         piece = f'{node.board().piece_at(chess.parse_square(square))}'.upper()
-        top = [] #stockfish.get_top_moves(5)
+        top_moves = [] #stockfish.get_top_moves(5)
 
         movenostr = f'{moveno: >2.0f}'
         is_white = True
@@ -53,35 +55,37 @@ with open(fn, encoding='utf-8') as h:
             score_diff = score['value'] - prev_score['value']
 
         
+        highlight_suf = f'({score_diff/100:+.1f})'.replace('+', ' ')
         if (is_white and score_diff < -450) or (not is_white and score_diff > 450):
-                highlight= f'   BLUNDER ({score_diff/100:.1f})'
+                highlight= f'BLUNDER'
         elif abs(score_diff) >= 150:
-                highlight= f'   ***** ({score_diff/100:.1f})'
+                highlight= f'  ***  '
         elif abs(score_diff) >= 100:
-                highlight= f'   *     ({score_diff/100:.1f})'
+                highlight= f'   *   '
         else:
-                highlight= '' #f'         ({score_diff/100:.1f})'
+                highlight= f'       ' 
+                #highlight_suf = ''
 
 
 
         if score['type'] == 'cp':
-            scorestr = f'{score["value"]/100:.1f}'
+            scorestr = f'{score["value"]/100:+.1f}'.replace('+', ' ')
         else:
             scorestr = f'M{score["value"]}'
 
         if prev_fen:
             if abs(score_diff) >= 450:
                 stockfish.set_fen_position(prev_fen)
-                top = stockfish.get_top_moves(5)
+                top_moves = stockfish.get_top_moves(3)
 
         topstr = ''
-        for cur_top_move in top:
+        for cur_top_move in top_moves:
             top_square1_src = f'{cur_top_move["Move"]}'[0:2]
-            top_piece1 = f'{node.board().piece_at(chess.parse_square(top_square1_src))}'.upper()
+            top_piece1 = f'{prev_board.piece_at(chess.parse_square(top_square1_src))}'.upper()
             top_square1 = f'{cur_top_move["Move"]}'[2:4]
             top_centipawn1 = cur_top_move['Centipawn']
             if top_centipawn1:
-                top_centipawn1 = f'{top_centipawn1/100:.1f}'
+                top_centipawn1 = f'{top_centipawn1/100:+.1f}'.replace('+', ' ')
             if not top_centipawn1:
                 top_centipawn1 = ''
 
@@ -92,17 +96,18 @@ with open(fn, encoding='utf-8') as h:
             topstr = f'{topstr} {top_piece1}{top_square1} ({top_centipawn1}{top_mate})    '
 
 
-        notfound = '  '
+        notfound = ' '
         if topstr.find(f'{piece}{square}') == -1 and topstr != '':
-            notfound = '**'
+            notfound = '*'
 
 
-        print(f'{movenostr} {piece}{square}  ({scorestr}) {notfound} {topstr} {highlight}')
+        print(f'{highlight} {movenostr}  ({scorestr})  {piece}{square}{notfound}            {topstr} {highlight_suf}')
 
         moveno+=0.5
         node_prev = node
         prev_score = score
         prev_fen = fen
+        prev_board = node.board()
         # print(stockfish.get_top_moves(3))
         # print(stockfish.get_best_move())
 
