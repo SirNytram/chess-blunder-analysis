@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 # import pyperclip
 import os
 from stockfish import Stockfish
