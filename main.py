@@ -57,7 +57,6 @@ def my_get_evaluation(fish: Stockfish, fen: str, timems: int):
 def current_milli_time():
     return round(time.time() * 1000)
 
-
 app = Flask(__name__)
 
 @app.route('/')
