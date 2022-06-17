@@ -67,8 +67,8 @@ def my_form():
 @app.route("/gitupdate")
 def gitupdate():
     os.system('gitupdate.bat')
-    # return redirect(url_for('searchimdb'))
-    return render_template('index.html', moves=[], pgn='', think_time=0.001)
+    return redirect(url_for('index'))
+    #return render_template('index.html', moves=[], pgn='', think_time=0.001)
 
 @app.route('/', methods=['POST'])
 def my_form_post():
