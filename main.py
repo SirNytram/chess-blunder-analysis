@@ -65,13 +65,18 @@ def index():
 
 @app.route("/gitupdate")
 def gitupdate():
-    # os.system('gitupdate.bat')
+    os.system('gitupdate.bat')
     return redirect(url_for('index'))
     #return render_template('index.html', moves=[], pgn='', think_time=0.001)
 
 @app.route('/', methods=['POST'])
 def analyse():
     pgn = request.form['pgn']
+    fenpos = pgn.find('[FEN')
+    if fenpos != -1:
+        fenpos_close = pgn.find(']', fenpos)
+        pgn = pgn[0:fenpos] + pgn[fenpos_close+1:] + ' * '
+
     moves = []
 
     detailed = request.form.get('detailed')
