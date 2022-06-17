@@ -8,8 +8,9 @@
     <div>
       <h1>Chess Blunder Analysis</h1>
       <form method="POST">
-        <textarea name="pgn" rows="20" cols="50">{{pgn}}</textarea>
-        <input type="checkbox" name="detailed">Detailed
+        <textarea name="pgn" rows="6" cols="60">{{pgn}}</textarea><br>
+        <input type="checkbox" name="detailed">Detailed<br>
+        <input type="text" name="think_time" value="0.1"><br>
         <input type="submit">
       </form>
     </div>  
@@ -90,6 +91,7 @@
         {% endfor %}
 
       </table>
+      Render Time: {{time}} ms
     </div>
   </body>
 </html>
