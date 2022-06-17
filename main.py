@@ -60,17 +60,17 @@ def current_milli_time():
 app = Flask(__name__)
 
 @app.route('/')
-def my_form():
+def index():
     return render_template('index.html', moves=[], pgn='', think_time=0.001)
 
 @app.route("/gitupdate")
 def gitupdate():
-    os.system('gitupdate.bat')
+    # os.system('gitupdate.bat')
     return redirect(url_for('index'))
     #return render_template('index.html', moves=[], pgn='', think_time=0.001)
 
 @app.route('/', methods=['POST'])
-def my_form_post():
+def analyse():
     pgn = request.form['pgn']
     moves = []
 
