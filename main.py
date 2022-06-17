@@ -61,7 +61,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def my_form():
-    return render_template('index.html', moves=[], pgn='')
+    return render_template('index.html', moves=[], pgn='', think_time=0.01)
 
 @app.route('/', methods=['POST'])
 def my_form_post():
@@ -220,7 +220,7 @@ def my_form_post():
                 # print(stockfish.get_best_move())
     # return output
 
-    return render_template('index.html', moves=moves,pgn=pgn, time=current_milli_time()-start_time)
+    return render_template('index.html', moves=moves,pgn=pgn, time=current_milli_time()-start_time, think_time=think_time)
 
 
 
