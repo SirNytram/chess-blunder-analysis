@@ -22,7 +22,7 @@
     <script>
       const labels = [
       {% for move in moves %}
-        '{{move[1]}}',
+        '{{move['move_no']}}',
         {% endfor %}
       ];
     
@@ -33,7 +33,7 @@
           label: 'Score',
           backgroundColor: 'rgb(255, 99, 132)',
           borderColor: 'rgb(255, 99, 132)',
-          data: [ {% for move in moves %}{{move[7]}},{% endfor %} ],
+          data: [ {% for move in moves %}{{move['score_graph']}},{% endfor %} ],
         },
         {
           label: 'Mid Line',
@@ -68,25 +68,21 @@
           <th>move no</th>
           <th>score</th>
           <th>move</th>
-          <th></th>
-          <th></th>
-          <th></th>
           <th>score diff</th>
           <th></th>
           <th>comment</th>
         </thead>
         {% for move in moves %}
         <tr>
-          <td>{{move[1]}}</td>
-          <td>{{move[2]}}</td>
-          <td>{{move[3]}}{{move[4]}}</td>
-          {% for top_move in move[5] %}
-          <td>{{top_move[0]}}{{top_move[1]}} {{top_move[2]}}</td>
+          <td>{{move['move_no']}}</td>
+          <td>{{move['score']}}</td>
+          <td>{{move['move']}}</td>
+          {% for top_move in move['top_moves'] %}
+          <td>{{top_move['move']}} {{top_move['score']}}</td>
           {% endfor %}
-
-          <td>{{move[6]}}</td>
+          <td>{{move['score_diff']}}</td>
           <td></td>
-          <td>{{move[0]}}</td>
+          <td>{{move['comment']}}</td>
         </tr>
         {% endfor %}
 

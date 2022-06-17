@@ -192,7 +192,7 @@ def analyse():
                         top_moves = stockfish.get_top_moves(3)
 
                 topstr = ''
-                top_moves_str = []
+                top_moves = []
                 for cur_top_move in top_moves:
                     top_square1_src = f'{cur_top_move["Move"]}'[0:2]
                     top_piece1 = f'{prev_board.piece_at(chess.parse_square(top_square1_src))}'.upper()
@@ -208,18 +208,31 @@ def analyse():
                         top_mate = f'M{cur_top_move["Mate"]}'
 
                     topstr = f'{topstr} {top_piece1}{top_square1} ({top_centipawn1}{top_mate})    '
-                    top_moves_str.append([top_piece1, top_square1, top_centipawn1, top_mate])
+                    top_moves.append({
+                        'move': top_piece1+top_square1,
+                        'score': top_centipawn1 + top_mate
+                    })
 
-                if len(top_moves_str) == 0:
-                    top_moves_str = ['','','']
-
+       
                 notfound = ' '
                 if topstr.find(f'{piece}{square}') == -1 and topstr != '':
                     notfound = '*'
 
                 line = f'{highlight} {movenostr}  ({scorestr})  {piece}{square}{notfound}            {topstr} {highlight_suf} '
                 output += f'{line}<br>\n'
-                moves.append([highlight, movenostr, scorestr, piece, square, top_moves_str, highlight_suf, scoregraph])
+                # moves.append([highlight, movenostr, scorestr, piece, square, top_moves_str, highlight_suf, scoregraph])
+                moves.append(
+                    {
+                        'move_no':movenostr,
+                        'score': scorestr,
+                        'score_graph': scoregraph,
+                        'move':piece+square,
+                        'score_diff': highlight_suf,
+                        'comment': highlight,
+                        'top_moves': top_moves
+                    }
+
+                )
                 print(line)
 
                 moveno+=0.5
