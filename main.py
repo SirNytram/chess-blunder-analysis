@@ -62,13 +62,13 @@ app = Flask(__name__)
 
 @app.route('/')
 def my_form():
-    return render_template('index.html', moves=[], pgn='', think_time=0.01)
+    return render_template('index.html', moves=[], pgn='', think_time=0.001)
 
 @app.route("/gitupdate")
 def gitupdate():
     os.system('gitupdate.bat')
     # return redirect(url_for('searchimdb'))
-    return render_template('index.html', moves=[], pgn='', think_time=0.01)
+    return render_template('index.html', moves=[], pgn='', think_time=0.001)
 
 @app.route('/', methods=['POST'])
 def my_form_post():
@@ -89,7 +89,7 @@ def my_form_post():
         f.close()
 
         #.\pgn-extract.exe --quiet -C --fencomments -w 100000 --output game-fen.pgn game.pgn
-        os.system('.\\pgn-extract.exe --quiet -C --fencomments -w 100000 --output game-fen.pgn game.pgn')
+        os.system('.\\pgn-extract.exe -C --fencomments -w 100000 --output game-fen.pgn game.pgn')
         stockfish = Stockfish('stockfish_15_x64_avx2.exe') #path="/Users/zhelyabuzhsky/Work/stockfish/stockfish-9-64")
         # stockfish.set_fen_position("rnbqkb1r/ppp2ppp/3p4/4P3/4n3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 5")
         # print(stockfish.get_top_moves(3))
