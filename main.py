@@ -13,6 +13,7 @@ engine = chess.engine.SimpleEngine.popen_uci("stockfish_15_x64_avx2.exe")
 VALUE_MATE = 3200
 
 
+
 def mate_to_value(mate: int) -> int:
     """
     Convert mate number to value.
@@ -61,6 +62,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def my_form():
+    return render_template('index.html', moves=[], pgn='', think_time=0.01)
+
+@app.route("/gitupdate")
+def gitupdate():
+    os.system('gitupdate.bat')
+    # return redirect(url_for('searchimdb'))
     return render_template('index.html', moves=[], pgn='', think_time=0.01)
 
 @app.route('/', methods=['POST'])
