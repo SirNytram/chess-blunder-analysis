@@ -14,6 +14,9 @@
         <input type="submit">
       </form>
     </div>  
+    <div>
+      Render Time: {{time}} ms
+    </div>
 
     <div>
       <canvas id="myChart"></canvas>
@@ -70,24 +73,26 @@
           <th>move</th>
           <th>score diff</th>
           <th></th>
+          <th></th>
+          <th></th>
           <th>comment</th>
         </thead>
         {% for move in moves %}
         <tr>
           <td>{{move['move_no']}}</td>
           <td>{{move['score']}}</td>
-          <td>{{move['move']}}</td>
-          {% for top_move in move['top_moves'] %}
-          <td>{{top_move['move']}} {{top_move['score']}}</td>
-          {% endfor %}
+          <td>{{move['move']|safe}}</td>
           <td>{{move['score_diff']}}</td>
           <td></td>
-          <td>{{move['comment']}}</td>
+          {% for top_move in move['top_moves'] %}
+          <td>{{top_move['move']|safe}} {{top_move['score']|safe}}</td>
+          {% endfor %}
+          <td></td>
+          <td>{{move['comment']|safe}}</td>
         </tr>
         {% endfor %}
 
       </table>
-      Render Time: {{time}} ms
     </div>
   </body>
 </html>
