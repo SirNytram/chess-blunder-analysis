@@ -98,8 +98,9 @@
           <td>{{move['score']}}</td>
           <td>({{move['score_diff']}})</td>
           <td></td>
-          <td>{%if move['top_moves']|length > 0 %}<a id="board-{{move['move_no_full']}}" href="static/board-{{move['move_no_full']}}.svg" title=" ">{{move['comment_w']}}</a>{% else %}{{move['comment_w']}}{% endif %}</td>
-          <td>{%if move['top_moves']|length > 0 %}<a id="board-{{move['move_no_full']}}" href="static/board-{{move['move_no_full']}}.svg" title=" ">{{move['comment_b']}}</a>{% else %}{{move['comment_b']}}{% endif %}</td>
+          {%if move['is_white'] == False%}<td></td>{% endif %}
+          <td>{%if move['top_moves']|length > 0 %}<a id="board-{{move['move_no_full']}}" href="static/board-{{move['move_no_full']}}.svg" title=" ">{{move['comment']}}</a>{% else %}{{move['comment']}}{% endif %}</td>
+          {%if move['is_white'] == True%}<td></td>{% endif %}
           {% for top_move in move['top_moves'] %}
           <td></td>
           <td>{{top_move['move']}}</td>

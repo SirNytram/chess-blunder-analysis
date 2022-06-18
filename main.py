@@ -271,6 +271,8 @@ def analyse():
                         'score_graph': scoregraph,
                         'move': move_formatted,
                         'score_diff': score_diff_formatted,
+                        'is_white': is_white,
+                        'comment': comment,
                         'comment_w': comment_w,
                         'comment_b': comment_b,
                         'top_moves': top_moves
