@@ -9,35 +9,21 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-    <script>
    
-
-    $(document).ready(function() {
-      $("#content1").html('<a id="board1" href="#" title="" >Board 1</a>');
-      $("#content1 #board1").tooltip({ content: '<img src="static/board-3.5.svg" width=300/>' }); 
-
-      $("#content2").html('<a id="board2" href="#" title="" >Board 2</a>');
-      $("#content2 #board2").tooltip({ content: '<img src="static/board-6.5.svg" width=300/>' }); 
-  
-     
-      });
-      </script>
     </head>
   <body>
-    
-    <!-- <div class="tooltip"><img class="size_of_img" src="https://babeltechreviews.com/wp-content/uploads/2018/07/rendition1.img_.jpg" alt="Image 1" /><span class="tooltiptext">grewon.pdf</span></div>  -->
+   
     <div>
       <h1>Chess Blunder Analysis</h1>
       <form method="POST">
         <textarea name="pgn" rows="6" cols="60">{{pgn}}</textarea><br>
-        <input type="checkbox" name="detailed">Detailed<br>
+        <input type="checkbox" name="detailed" {{detailed_ret}}>Detailed<br>
         <input type="text" name="think_time" value="{{think_time}}"><br>
         <input type="submit">
       </form>
     </div>  
     <div>
-      Render Time: {{time}} ms
+      Render Time: {{time}} secs
     </div>
 
     <div>
@@ -80,6 +66,11 @@
         document.getElementById('myChart'),
         config
       );
+
+// const ctx = document.getElementById('myChart');
+// const ctx = document.getElementById('myChart').getContext('2d');
+// const ctx = $('#myChart');
+// const ctx = 'myChart';
     </script> 
 
 
@@ -89,11 +80,13 @@
     <div>
       <table border=1 style="border-collapse:collapse">
         <thead>
-          <th>move no</th>
-          <th>score</th>
+          <th>no</th>
           <th>move</th>
-          <th>score diff</th>
-          <th>comment</th>
+          <th>score</th>
+          <th>diff</th>
+          <th></th>
+          <th>comment<br>white</th>
+          <th>comment<br>black</th>
           <th></th>
           <th>top moves</th>
         </thead>
@@ -101,13 +94,17 @@
         {% for move in moves %}
         <tr>
           <td>{{move['move_no']}}</td>
-          <td>{{move['score']}}</td>
           <td>{{move['move']|safe}}</td>
-          <td>{{move['score_diff']}}</td>
-          <td><a id="board-{{move['move_no_full']}}" href="static/board-{{move['move_no_full']}}.svg" title=" ">{{move['comment']|safe}}</a></td>
+          <td>{{move['score']}}</td>
+          <td>({{move['score_diff']}})</td>
           <td></td>
+          <td>{%if move['top_moves']|length > 0 %}<a id="board-{{move['move_no_full']}}" href="static/board-{{move['move_no_full']}}.svg" title=" ">{{move['comment_w']}}</a>{% else %}{{move['comment_w']}}{% endif %}</td>
+          <td>{%if move['top_moves']|length > 0 %}<a id="board-{{move['move_no_full']}}" href="static/board-{{move['move_no_full']}}.svg" title=" ">{{move['comment_b']}}</a>{% else %}{{move['comment_b']}}{% endif %}</td>
           {% for top_move in move['top_moves'] %}
-          <td>{{top_move['move']|safe}} {{top_move['score']|safe}}</td>
+          <td></td>
+          <td>{{top_move['move']}}</td>
+          <td>{{top_move['score']}}</td>
+          <td>({{top_move['score_diff']}})</td>
           {% endfor %}
         </tr>
         

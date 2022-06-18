@@ -26,7 +26,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html', moves=[], pgn='', think_time=DEFAULT_THINK_TIME)
+    return render_template('index.html', moves=[], pgn='', think_time=DEFAULT_THINK_TIME, detailed_ret='')
 
 @app.route("/gitupdate")
 def gitupdate():
@@ -132,11 +132,11 @@ def analyse():
                     score_diff = score.pov(chess.WHITE).score() - prev_score.pov(chess.WHITE).score()
 
                 
-                score_diff_formatted = f'{score_diff/100:+.1f}'.replace('+', ' ')
+                score_diff_formatted = f'{score_diff/100:.1f}'
                 if (is_white and score_diff < -450) or (not is_white and score_diff > 450):
                         comment= f'BLUNDER'
                 elif (is_white and score_diff < -140) or (not is_white and score_diff > 140):
-                        comment= f'MISTAKE'
+                        comment= f'***'
                 elif (is_white and score_diff < -80) or (not is_white and score_diff > 80):
                         comment= f'*'
                 else:
@@ -147,8 +147,9 @@ def analyse():
                 if score.is_mate():
                     scorestr = f'M{score.pov(chess.WHITE).mate()}'
                     scoregraph = score.pov(chess.WHITE).score(mate_score = 30)
+                    comment = 'MATE'
                 else:
-                    scorestr = f'{score.pov(chess.WHITE).score()/100:+.1f}'.replace('+', ' ')
+                    scorestr = f'{score.pov(chess.WHITE).score()/100:.1f}'
                     scoregraph = scorestr
 
                     
@@ -166,7 +167,7 @@ def analyse():
                 
 
                 if prev_node and detailed:
-                    if comment in ('MISTAKE', 'BLUNDER'): #abs(score_diff) >= 140:
+                    if comment in ('***', 'BLUNDER', '*', 'MATE'): #abs(score_diff) >= 140:
 
                         stockfish.set_fen_position(prev_node.comment)
                         sf_top_moves = stockfish.get_top_moves(3)
@@ -185,7 +186,10 @@ def analyse():
                             top_from_file = f'{top_move}'[0:1]
                             top_piece = convert_piece(f'{prev_node.board().piece_at(top_move.from_square)}'.upper(), is_white)
                             if top_score != None:
-                                top_score = f'({top_score/100:+.1f})'.replace('+', ' ')
+                                top_score = f'{top_score/100:.1f}'
+                                top_score_diff = ''
+                                if 'M' not in scorestr:
+                                    top_score_diff = f'{(float(top_score) - float(scorestr)):.1f}'
                             else:
                                 top_score = f"M{info_best_move['Mate']}"
                             # next_board = node.board()
@@ -216,7 +220,8 @@ def analyse():
                             img_arrows.append(chess.svg.Arrow(top_move.from_square, top_move.to_square, color = arrowcolor))
                             top_moves.append({
                                 'move': f'{top_piece}{top_square}{top_suffix}',
-                                'score': f'{top_score}' #f'({top_score/100:+.1f})'.replace('+', ' ')
+                                'score': f'{top_score}',
+                                'score_diff': f'{top_score_diff}',
                             })
 
                         img_arrows.append(chess.svg.Arrow(node.move.from_square, node.move.to_square, color = 'red'))
@@ -249,6 +254,14 @@ def analyse():
                 movenograph = f'{int(moveno)}{move_formatted}..'
                 if moveno % 1 != 0:
                     movenograph = f'{int(moveno)} ..{move_formatted}'
+
+                if is_white:
+                    comment_w = comment
+                    comment_b = ''
+                else:
+                    comment_w = ''
+                    comment_b = comment
+
                 moves.append(
                     {
                         'move_no_full':int(moveno * 10),
@@ -258,12 +271,14 @@ def analyse():
                         'score_graph': scoregraph,
                         'move': move_formatted,
                         'score_diff': score_diff_formatted,
-                        'comment': comment,
+                        'comment_w': comment_w,
+                        'comment_b': comment_b,
                         'top_moves': top_moves
                     }
 
                 )
-                print(line)
+                print(line) 
+
 
                 moveno+=0.5
                 node_prev = node
@@ -272,7 +287,11 @@ def analyse():
                 # print(stockfish.get_top_moves(3))
                 # print(stockfish.get_best_move())
 
-    return render_template('index.html', moves=moves,pgn=pgn, time=current_milli_time()-start_time, think_time=think_time)
+    detailed_ret = ''
+    if detailed:
+        detailed_ret = 'checked'
+
+    return render_template('index.html', moves=moves,pgn=pgn, time=f'{(current_milli_time()-start_time)/1000:.1f}', think_time=think_time, detailed_ret=detailed_ret)
 
 
 
