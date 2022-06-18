@@ -1,10 +1,32 @@
 <html>
+ 
+    
   <head>
     <title>Chess Blunder Analysis</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-  </head>
+    <script>
+   
+
+    $(document).ready(function() {
+      $("#content1").html('<a id="board1" href="#" title="" >Board 1</a>');
+      $("#content1 #board1").tooltip({ content: '<img src="static/board-3.5.svg" width=300/>' }); 
+
+      $("#content2").html('<a id="board2" href="#" title="" >Board 2</a>');
+      $("#content2 #board2").tooltip({ content: '<img src="static/board-6.5.svg" width=300/>' }); 
+  
+     
+      });
+      </script>
+    </head>
   <body>
+    
+    <!-- <div class="tooltip"><img class="size_of_img" src="https://babeltechreviews.com/wp-content/uploads/2018/07/rendition1.img_.jpg" alt="Image 1" /><span class="tooltiptext">grewon.pdf</span></div>  -->
     <div>
       <h1>Chess Blunder Analysis</h1>
       <form method="POST">
@@ -25,7 +47,7 @@
     <script>
       const labels = [
       {% for move in moves %}
-        '{{move['move_no']}}',
+        '{{move['move_no_graph']}}',
         {% endfor %}
       ];
     
@@ -63,7 +85,6 @@
 
 
 
-
    
     <div>
       <table border=1 style="border-collapse:collapse">
@@ -72,27 +93,40 @@
           <th>score</th>
           <th>move</th>
           <th>score diff</th>
-          <th></th>
-          <th></th>
-          <th></th>
           <th>comment</th>
+          <th></th>
+          <th>top moves</th>
         </thead>
+        
         {% for move in moves %}
         <tr>
           <td>{{move['move_no']}}</td>
           <td>{{move['score']}}</td>
           <td>{{move['move']|safe}}</td>
           <td>{{move['score_diff']}}</td>
+          <td><a id="board-{{move['move_no_full']}}" href="static/board-{{move['move_no_full']}}.svg" title=" ">{{move['comment']|safe}}</a></td>
           <td></td>
           {% for top_move in move['top_moves'] %}
           <td>{{top_move['move']|safe}} {{top_move['score']|safe}}</td>
           {% endfor %}
-          <td></td>
-          <td>{{move['comment']|safe}}</td>
         </tr>
+        
         {% endfor %}
 
       </table>
+
+  
+
+
+
     </div>
+
+    <script>
+      {% for move in moves %}
+        $("#board-{{move['move_no_full']}}").tooltip({ content: '<img src="static/board-{{move['move_no_full']}}.svg" width=300/>' });
+      {% endfor %}
+    </script>
+    
+
   </body>
 </html>

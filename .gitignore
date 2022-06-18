@@ -4,3 +4,5 @@
 /gameout2.pgn
 /__pycache__
 /*.pgn
+/static/*.svg
+/vips*

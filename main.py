@@ -5,7 +5,12 @@ from stockfish import Stockfish
 import chess
 import chess.pgn
 import chess.engine
+import chess.svg
 import time
+# import pyvips
+# from svglib.svglib import svg2rlg
+# from reportlab.graphics import renderPM
+
 engine = chess.engine.SimpleEngine.popen_uci("stockfish_15_x64_avx2.exe")
 
 
@@ -15,6 +20,9 @@ def current_milli_time():
     return round(time.time() * 1000)
 
 app = Flask(__name__)
+# @app.route('/boardimg')
+# def boardimg():
+#     return 
 
 @app.route('/')
 def index():
@@ -33,7 +41,7 @@ def convert_piece(piece, is_white):
         pieces = ['♔','♕','♗','♘','♙','♖']
 
     if piece.upper() == 'P':
-        piece = '&nbsp;&nbsp;&nbsp;'
+        piece = ''
 
     if piece.upper() == 'K':
         piece = pieces[0]
@@ -68,6 +76,7 @@ def analyse():
 
     if pgn != '':
         f = open('game.pgn', 'w')
+        
         f.write(pgn)
         f.close()
 
@@ -94,7 +103,7 @@ def analyse():
                     movenostr = '  '
                     is_white = False
 
-
+                
                 fen = node.comment
                 info = engine.analyse(node.board(), chess.engine.Limit(time=float(think_time)), multipv=None)
                 score = info['score']
@@ -105,8 +114,8 @@ def analyse():
                 
                 if prev_node and prev_node.board().is_capture(node.move):
                     square = 'x' + square
-                    if piece == '&nbsp;&nbsp;&nbsp;':
-                        piece = '&nbsp;&nbsp;' + from_file
+                    if piece == '':
+                        piece = from_file
                 
                 suffix = ''
                 if node.board().is_check():
@@ -153,49 +162,81 @@ def analyse():
 
                 topstr = ''
                 top_moves = []
+                img_arrows = []
+                
 
-                if prev_node:
-                    if comment != '': #abs(score_diff) >= 140:
-                        info_best_move = engine.play(prev_node.board(),chess.engine.Limit(depth = 18, time=0.5), info= chess.engine.INFO_SCORE)
-                        #info_best_move = engine.play(prev_node.board(),chess.engine.Limit(time=float(DEFAULT_THINK_TIME_BEST_MOVE)), info= chess.engine.INFO_ALL)
+                if prev_node and detailed:
+                    if comment in ('MISTAKE', 'BLUNDER'): #abs(score_diff) >= 140:
+
+                        stockfish.set_fen_position(prev_node.comment)
+                        sf_top_moves = stockfish.get_top_moves(3)
+                        #top_moves = [ engine.play(prev_node.board(),chess.engine.Limit(depth = 18, time=0.5), info= chess.engine.INFO_SCORE) ]
+                        #top_moves = [] engine.play(prev_node.board(),chess.engine.Limit(time=float(DEFAULT_THINK_TIME_BEST_MOVE)), info= chess.engine.INFO_ALL) ]
+
+                        if moveno == 23:
+                            pass
+
+                        for index, info_best_move in enumerate(sf_top_moves):
+                            top_move = chess.Move(chess.parse_square(info_best_move['Move'][0:2]), chess.parse_square(info_best_move['Move'][2:4]))
+                            # move = info_best_move.move
+                            top_score = info_best_move['Centipawn']
+                            # top_score = move.info['score'].pov(chess.WHITE).score()
+                            top_square = f'{top_move}'[2:4]
+                            top_from_file = f'{top_move}'[0:1]
+                            top_piece = convert_piece(f'{prev_node.board().piece_at(top_move.from_square)}'.upper(), is_white)
+                            if top_score != None:
+                                top_score = f'({top_score/100:+.1f})'.replace('+', ' ')
+                            else:
+                                top_score = f"M{info_best_move['Mate']}"
+                            # next_board = node.board()
+                            # next_board.push(move.move)
+
+                            if prev_node.board().is_capture(top_move):
+                                top_square = 'x' + top_square
+                                if top_piece == '':
+                                    top_piece = top_from_file
 
 
-                        top_square = f'{info_best_move.move}'[2:4]
-                        top_from_file = f'{info_best_move.move}'[0:1]
-                        top_piece = convert_piece(f'{prev_node.board().piece_at(info_best_move.move.from_square)}'.upper(), is_white)
-                        top_score = info_best_move.info['score'].pov(chess.WHITE).score()
-                        if top_score:
-                            top_score = f'({top_score/100:+.1f})'.replace('+', ' ')
-                        else:
-                            top_score = f"M{info_best_move.info['score'].pov(chess.WHITE).mate()}"
-                        # next_board = node.board()
-                        # next_board.push(info_best_move.move)
+                            top_suffix = ''
+                            board_next = prev_node.board()
+                            # print(f'pushing {move.move}')
+                            board_next.push(top_move) 
+                            if board_next.is_check():
+                                top_suffix += '+'
+                            if board_next.is_checkmate():
+                                top_suffix += '#'
 
-                        if prev_node.board().is_capture(info_best_move.move):
-                            top_square = 'x' + top_square
-                            if top_piece == '&nbsp;&nbsp;&nbsp;':
-                                top_piece = '&nbsp;&nbsp;' + top_from_file
+                            if index == 1:
+                                arrowcolor = 'blue'
+                            elif index == 2:
+                                arrowcolor = 'yellow'
+                            else:
+                                arrowcolor = 'green'
+
+                            img_arrows.append(chess.svg.Arrow(top_move.from_square, top_move.to_square, color = arrowcolor))
+                            top_moves.append({
+                                'move': f'{top_piece}{top_square}{top_suffix}',
+                                'score': f'{top_score}' #f'({top_score/100:+.1f})'.replace('+', ' ')
+                            })
+
+                        img_arrows.append(chess.svg.Arrow(node.move.from_square, node.move.to_square, color = 'red'))
+                        board_img = chess.svg.board(prev_node.board(), arrows= img_arrows, size=350)
+                        f = open(f'static\\board-{int(moveno*10)}.svg', 'w')
+                        f.write(board_img)
+                        f.close()
+                        # image = pyvips.Image.new_from_file("board.svg", dpi=300)
+                        # image.write_to_file("x.png")
+                        # drawing = svg2rlg("board.svg ")
+                        # renderPM.drawToFile(drawing, "board.png", fmt="PNG")
+
+                        
 
 
-                        top_suffix = ''
-                        board_next = prev_node.board()
-                        # print(f'pushing {info_best_move.move}')
-                        board_next.push(info_best_move.move) 
-                        if board_next.is_check():
-                            top_suffix += '+'
-                        if board_next.is_checkmate():
-                            top_suffix += '#'
-
-                        top_moves.append({
-                            'move': f'{top_piece}{top_square}{top_suffix}',
-                            'score': f'{top_score}' #f'({top_score/100:+.1f})'.replace('+', ' ')
-                        })
-
-                while len(top_moves) <= 0:
-                    top_moves.append({
-                        'move': '',
-                        'score': ''
-                    })
+                # while len(top_moves) < 5:
+                #     top_moves.append({
+                #         'move': '',
+                #         'score': ''
+                #     })
                     
                 notfound = ''
                 # if topstr.find(f'{piece}{square}') == -1 and topstr != '':
@@ -203,12 +244,19 @@ def analyse():
 
                 line = f'{comment} {movenostr}  ({scorestr})  {piece}{square}{notfound}            {topstr} {score_diff_formatted} '
                 output += f'{line}<br>\n'
+ 
+                move_formatted = f'{piece}{square}{suffix}'
+                movenograph = f'{int(moveno)}{move_formatted}..'
+                if moveno % 1 != 0:
+                    movenograph = f'{int(moveno)} ..{move_formatted}'
                 moves.append(
                     {
+                        'move_no_full':int(moveno * 10),
                         'move_no':movenostr,
+                        'move_no_graph': movenograph,
                         'score': scorestr,
                         'score_graph': scoregraph,
-                        'move':f'{piece}{square}{suffix}',
+                        'move': move_formatted,
                         'score_diff': score_diff_formatted,
                         'comment': comment,
                         'top_moves': top_moves
