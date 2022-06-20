@@ -121,7 +121,7 @@
 
     <script>
       {% for move in moves %}
-        $("#board-{{move['move_no_full']}}").tooltip({ content: '<img src="static/board-{{move['move_no_full']}}.svg" width=300/>' });
+        $("#board-{{move['move_no_full']}}").tooltip({ content: '<img src="/static/board-{{move['move_no_full']}}.svg" width=300/>' });
       {% endfor %}
     </script>
     

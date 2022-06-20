@@ -10,8 +10,10 @@ import time
 # import pyvips
 # from svglib.svglib import svg2rlg
 # from reportlab.graphics import renderPM
+from chessapi import get_game_bydate, get_game_byindex
 
 engine = chess.engine.SimpleEngine.popen_uci("stockfish_15_x64_avx2.exe")
+stockfish = Stockfish('stockfish_15_x64_avx2.exe', parameters= {'Threads':4, 'Hash': 2048}) #path="/Users/zhelyabuzhsky/Work/stockfish/stockfish-9-64")
 
 
 DEFAULT_THINK_TIME = 0.01
@@ -57,19 +59,38 @@ def convert_piece(piece, is_white):
     return piece
 
 
+@app.route('/lastgame/<user>')
+def analyse_last_game(user):
+    return redirect(url_for('analyse_by_index', user=user, month_index=-1, game_index=-1))
+
+    # pgn = get_game_byindex(user, 0, 0)['pgn']
+    # return analyse_pgn(pgn)
+
+@app.route('/gamebyindex/<user>/<month_index>/<game_index>')
+def analyse_by_index(user, month_index, game_index):
+    pgn = get_game_byindex(user, int(month_index), int(game_index))['pgn']
+    return analyse_pgn(pgn)
+
+@app.route('/gamebydate/<user>/<year>/<month>/<game_index>')
+def analyse_by_date(user, year, month, game_index = 0):
+    pgn = get_game_bydate(user, year, month, int(game_index))['pgn']
+    return analyse_pgn(pgn)
+
 @app.route('/', methods=['POST'])
 def analyse():
     pgn = request.form['pgn']
+    detailed = request.form.get('detailed')
+    think_time = request.form.get('think_time')
+    return analyse_pgn(pgn, detailed, think_time)
+
+
+def analyse_pgn(pgn, detailed = 'on', think_time='0.01'):
     fenpos = pgn.find('[FEN')
     if fenpos != -1:
         fenpos_close = pgn.find(']', fenpos)
         pgn = pgn[0:fenpos] + pgn[fenpos_close+1:] + ' * '
 
     moves = []
-
-    detailed = request.form.get('detailed')
-
-    think_time = request.form.get('think_time')
 
     output = ''
     start_time = current_milli_time()
@@ -81,7 +102,6 @@ def analyse():
         f.close()
 
         os.system('.\\pgn-extract.exe -C --fencomments -w 100000 --output game-fen.pgn game.pgn')
-        stockfish = Stockfish('stockfish_15_x64_avx2.exe') #path="/Users/zhelyabuzhsky/Work/stockfish/stockfish-9-64")
 
         fn = 'game-fen.pgn'
         with open(fn, encoding='utf-8') as h:
@@ -153,14 +173,6 @@ def analyse():
                     scoregraph = scorestr
 
                     
-
-                # if prev_node and detailed:
-                #     if abs(score_diff) >= 450:
-                #         info_best_move = engine.play(node.board(),chess.engine.Limit(time=float(0.1)))
-
-                #         stockfish.set_fen_position(prev_node.comment)
-                #         top_moves = stockfish.get_top_moves(3)
-
                 topstr = ''
                 top_moves = []
                 img_arrows = []
@@ -251,16 +263,11 @@ def analyse():
                 output += f'{line}<br>\n'
  
                 move_formatted = f'{piece}{square}{suffix}'
-                movenograph = f'{int(moveno)}{move_formatted}..'
+                # movenograph = f'{int(moveno)}{move_formatted}..'
+                movenograph = f'{int(moveno)}'
                 if moveno % 1 != 0:
-                    movenograph = f'{int(moveno)} ..{move_formatted}'
-
-                if is_white:
-                    comment_w = comment
-                    comment_b = ''
-                else:
-                    comment_w = ''
-                    comment_b = comment
+                    # movenograph = f'{int(moveno)} ..{move_formatted}'
+                    movenograph = ''
 
                 moves.append(
                     {
@@ -273,8 +280,6 @@ def analyse():
                         'score_diff': score_diff_formatted,
                         'is_white': is_white,
                         'comment': comment,
-                        'comment_w': comment_w,
-                        'comment_b': comment_b,
                         'top_moves': top_moves
                     }
 
@@ -286,6 +291,7 @@ def analyse():
                 node_prev = node
                 prev_score = score
                 prev_node = node
+                
                 # print(stockfish.get_top_moves(3))
                 # print(stockfish.get_best_move())
 
