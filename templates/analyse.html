@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en" style="font-size: 12px;">
+  <head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+    <!-- Bootstrap CSS v5.2.0-beta1 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"  integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+  </head>
+  <body class="">
+      
+    <nav class="navbar navbar-light bg-light fixed-top">
+        <div class="container-fluid">
+          <a class="navbar-brand">Chess Blunder Analysis</a>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="chess.com User Name" aria-label="Search" value="{{user}}">
+            <button class="btn btn-outline-success me-2 text-nowrap" type="submit">Last Game</button> 
+            <a name="" id="" class="btn btn-outline-success me-2 text-nowrap" href="/games/{{user}}" role="button">Games</a>
+          </form>
+    
+      <div class="container" style="width:500px;">
+        <div class="row">
+        <canvas id="score-chart">        
+            <script>
+                const labels = [
+                {% for move in moves %}
+                '{{move['graph_no']}}',
+                {% endfor %}
+                ];
+                
+                const data = {
+                    labels: labels,
+                    datasets: [{
+                    label: '{{graph_title}}',
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: [
+                    {% for move in moves %}
+                    {{move['graph_score']}},
+                    {% endfor %}
+                    ],
+                    }]
+                };
+                
+                const config = {
+                    type: 'line',
+                    data: data,
+                    options: {}
+                };
+
+                const score_chart = new Chart(document.getElementById('score-chart'),
+                    config
+                );
+            </script>
+        </canvas>
+        </div>
+      </div>
+
+    </div>
+</nav>
+<div class="container-sm" style="padding-top: 300px">
+<table class="table">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th class="text-center">Move</th>
+            <th class="text-center">Score</th>
+            <th class="text-center">Comment</th>
+            <th></th>
+            <th>Top Moves</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for move in moves %}
+        <tr class="align-middle">
+            <td scope="row">{{move['no']}}</td>
+            <td class="text-center">{{move['move']}}<br>({{move['score_diff']}})</td>
+            <td class="text-center">{{move['score']}}</td>
+
+            {%if move['is_white'] == False%}<td></td>{% endif %}
+            <td>{%if move['top_moves']|length > 0 %}<a id="board-{{move['move_id']}}" href="javascript:(void)" title=" ">{{move['comment']}}</a>{% else %}{{move['comment']}}{% endif %}</td>
+            {%if move['is_white'] == True%}<td></td>{% endif %}
+            <!--   
+            <td class="text-center">{{move['comment']}}</td>
+            <td></td>
+             -->
+            {% for top_move in move['top_moves'] %}
+            <td>{{top_move['move']}}<br>({{top_move['score_diff']}})</td> 
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        <!-- <tr>
+            <td scope="row">6</td>
+            <td>♘xg5 <br>(-1.6)</td>
+            <td>-7.0</td>
+            <td>Blunder</td>
+            <td></td>
+            <td>♘c3 <br>(4.0)</td> 
+            <td>♕d5 <br>(-1.5)</td>
+            <td>exd6 <br>(M2)</td>
+        </tr>
+        <tr>
+            <td scope="row">6</td>
+            <td>♘xg5 <br>(-1.6)</td>
+            <td>-7.0</td>
+            <td></td>
+            <td>Blunder</td>
+            <td>♘c3 <br>(4.0)</td> 
+            <td>♕d5 <br>(-1.5)</td>
+            <td>exd6 <br>(M2)</td>
+        </tr> -->
+    </tbody>
+</table>
+
+
+</div>
+
+
+<script>
+    {% for move in moves %}
+      $("#board-{{move['move_id']}}").tooltip({ content: '<img src="/static/board-{{move['move_id']}}.svg" width=300/>' });
+    {% endfor %}
+</script>
+  
+
+<div class="container-fluid">
+    Analysis Time: {{render_time}} sec
+</div>
+
+<!-- FontAwesome 6.1.1 CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- (Optional) Use CSS or JS implementation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js" integrity="sha512-6PM0qYu5KExuNcKt5bURAoT6KCThUmHRewN3zUFNaoI6Di7XJPTMoT6K0nsagZKk2OB4L7E3q1uQKHNHd4stIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Bootstrap JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
+  </body>
+</html>
