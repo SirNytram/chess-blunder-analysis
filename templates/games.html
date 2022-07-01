@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" style="font-size: 12px;">
   <head>
-    <title>Title</title>
+    <title>Chess Analysis</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -40,16 +40,9 @@
                   <td>{{game['result']}}</td>
                   <td>{{game['moves']}}</td>
                   <td>{{game['date']}}</td>
-                  <td><a name="" id="" class="btn btn-primary me-1" href="/analyse/{{user}}/{{game['game_id']}}/view" role="button">View</a><a name="" id="" class="btn btn-primary me-1" href="/analyse/{{user}}/{{game['game_id']}}/analyse" role="button">Analyse</a></td></tr>
+                  <td><a name="" id="" class="btn btn-primary me-1" href="/game/{{user}}/{{game['game_id']}}/view" role="button">View</a><a name="" id="" class="btn btn-primary me-1" href="/game/{{user}}/{{game['game_id']}}/analyse" role="button">Analyse</a></td></tr>
             {% endfor %}
 
-              <!-- <tr class="table-danger">
-                <td scope="row">CubiXL (1200)<br>SirNytram (400)</td>
-                <td>Loose</td>
-                <td>42</td>
-                <td>Mon 18</td>
-                <td><a name="" id="" class="btn btn-primary me-1" href="#" role="button">View</a><a name="" id="" class="btn btn-primary me-1" href="#" role="button">Analyse</a></td>
-            </tr> -->
         </tbody>
       </table>
 

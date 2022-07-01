@@ -1,130 +1,54 @@
-<html>
- 
-    
+<!doctype html>
+<html lang="en" style="font-size: 12px;">
   <head>
-    <title>Chess Blunder Analysis</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Chess Analysis</title>
+    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-   
-    </head>
-  <body>
-   
-    <div>
-      <h1>Chess Blunder Analysis</h1>
-      <form method="POST">
-        <textarea name="pgn" rows="6" cols="60">{{pgn}}</textarea><br>
-        <input type="checkbox" name="detailed" {{detailed_ret}}>Detailed<br>
-        <input type="text" name="think_time" value="{{think_time}}"><br>
-        <input type="submit">
-      </form>
-    </div>  
-    <div>
-      Render Time: {{time}} secs
-    </div>
 
-    <div>
-      <canvas id="myChart"></canvas>
-    </div>
 
-    <script>
-      const labels = [
-      {% for move in moves %}
-        '{{move['move_no_graph']}}',
-        {% endfor %}
-      ];
+    <!-- Bootstrap CSS v5.2.0-beta1 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"  integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+  </head>
+  <body class="">
+      
+    <nav class="navbar navbar-light bg-light fixed-top">
+        <div class="container-fluid">
+          <a class="navbar-brand">Chess Analysis</a>
+          <form class="d-flex" method="POST">
+            <input name="username" class="form-control me-2" type="search" placeholder="chess.com User Name" aria-label="Search" value="{{user}}">
+            <div class="btn-group">
+              <button type="submit"  name="action" value='games' class="btn btn-primary">View Games</button>
+              <!-- <a name="" id="" class="btn btn-secondary text-nowrap" href="/games/{{user}}" role="button">View Games</a> -->
+              <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <button type="submit" name="action" value='last_game' class="dropdown-itembtn btn-primary">View Last Game</button>
+                <!-- <a class="dropdown-item" href="/game/{{user}}">View Last Game</a> -->
+              </div>
+            </div>
+          </form>
     
-      const data = {
-        labels: labels,
-        datasets: [
-        {
-          label: 'Score',
-          backgroundColor: 'rgb(255, 99, 132)',
-          borderColor: 'rgb(255, 99, 132)',
-          data: [ {% for move in moves %}{{move['score_graph']}},{% endfor %} ],
-        },
-        {
-          label: 'Mid Line',
-          borderColor: "#3e95cd",
-          data: [ {% for move in moves %}0,{% endfor %} ],
-        }
-      ]
-      };
-    
-      const config = {
-        type: 'line',
-        data: data,
-        options: {}
-      };
-    </script>
-
-    <script>
-      const myChart = new Chart(
-        document.getElementById('myChart'),
-        config
-      );
-
-// const ctx = document.getElementById('myChart');
-// const ctx = document.getElementById('myChart').getContext('2d');
-// const ctx = $('#myChart');
-// const ctx = 'myChart';
-    </script> 
-
-
-
-
-   
-    <div>
-      <table border=1 style="border-collapse:collapse">
-        <thead>
-          <th>no</th>
-          <th>move</th>
-          <th>score</th>
-          <th>diff</th>
-          <th></th>
-          <th>comment<br>white</th>
-          <th>comment<br>black</th>
-          <th></th>
-          <th>top moves</th>
-        </thead>
-        
-        {% for move in moves %}
-        <tr>
-          <td>{{move['move_no']}}</td>
-          <td>{{move['move']|safe}}</td>
-          <td>{{move['score']}}</td>
-          <td>({{move['score_diff']}})</td>
-          <td></td>
-          {%if move['is_white'] == False%}<td></td>{% endif %}
-          <td>{%if move['top_moves']|length > 0 %}<a id="board-{{move['move_no_full']}}" href="javascript:(void)" title=" ">{{move['comment']}}</a>{% else %}{{move['comment']}}{% endif %}</td>
-          {%if move['is_white'] == True%}<td></td>{% endif %}
-          {% for top_move in move['top_moves'] %}
-          <td></td>
-          <td>{{top_move['move']}}</td>
-          <td>{{top_move['score']}}</td>
-          <td>({{top_move['score_diff']}})</td>
-          {% endfor %}
-        </tr>
-        
-        {% endfor %}
-
-      </table><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-
-  
-
 
 
     </div>
+</nav>
 
-    <script>
-      {% for move in moves %}
-        $("#board-{{move['move_no_full']}}").tooltip({ content: '<img src="/static/board-{{move['move_no_full']}}.svg" width=300/>' });
-      {% endfor %}
-    </script>
-    
+<!-- FontAwesome 6.1.1 CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+<!-- (Optional) Use CSS or JS implementation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js" integrity="sha512-6PM0qYu5KExuNcKt5bURAoT6KCThUmHRewN3zUFNaoI6Di7XJPTMoT6K0nsagZKk2OB4L7E3q1uQKHNHd4stIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Bootstrap JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
   </body>
 </html>

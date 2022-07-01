@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" style="font-size: 12px;">
   <head>
-    <title>Title</title>
+    <title>Chess Analysis</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -20,11 +20,18 @@
       
     <nav class="navbar navbar-light bg-light fixed-top">
         <div class="container-fluid">
-          <a class="navbar-brand">Chess Blunder Analysis</a>
+          <a class="navbar-brand">Chess Analysis</a>
           <form class="d-flex">
             <input class="form-control me-2" type="search" placeholder="chess.com User Name" aria-label="Search" value="{{user}}">
-            <button class="btn btn-outline-success me-2 text-nowrap" type="submit">Last Game</button> 
-            <a name="" id="" class="btn btn-outline-success me-2 text-nowrap" href="/games/{{user}}" role="button">Games</a>
+            <div class="btn-group">
+              <a name="" id="" class="btn btn-secondary text-nowrap" href="/games/{{user}}" role="button">View Games</a>
+              <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="/game/{{user}}">View Last Game</a>
+              </div>
+            </div>
           </form>
     
       <div class="container" style="width:500px;">
@@ -41,8 +48,9 @@
                     labels: labels,
                     datasets: [{
                     label: '{{graph_title}}',
-                    backgroundColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgb(255, 255, 255)',
                     borderColor: 'rgb(255, 99, 132)',
+                    fill: true,
                     data: [
                     {% for move in moves %}
                     {{move['graph_score']}},
@@ -64,6 +72,20 @@
         </canvas>
         </div>
       </div>
+      <!-- <div class="">
+          <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="triggerId" data-bs-toggle="dropdown" aria-haspopup="true"
+                      aria-expanded="false">
+                          Quick View
+                      </button>
+              <div class="dropdown-menu" aria-labelledby="triggerId">
+                  <a class="dropdown-item" href="/game/{{user}}/{{game_id}}/view">Quick View</a>
+                  <a class="dropdown-item " href="/game/{{user}}/{{game_id}}/analyse/1">Analyse 1 Move</a>
+                  <a class="dropdown-item " href="/game/{{user}}/{{game_id}}/analyse/3">Analyse 3 Moves</a>
+
+              </div> 
+          </div>
+      </div> -->
 
     </div>
 </nav>
@@ -73,10 +95,11 @@
         <tr>
             <th>No</th>
             <th class="text-center">Move</th>
-            <th class="text-center">Score</th>
-            <th class="text-center">Comment</th>
-            <th></th>
+            <!-- <th class="text-center">Score</th> -->
+            <th class="">Comment<Br>white</th>
+            <th>black</th>
             <th>Top Moves</th>
+            <th></th>
             <th></th>
             <th></th>
         </tr>
@@ -85,18 +108,13 @@
         {% for move in moves %}
         <tr class="align-middle">
             <td scope="row">{{move['no']}}</td>
-            <td class="text-center">{{move['move']}}<br>({{move['score_diff']}})</td>
-            <td class="text-center">{{move['score']}}</td>
-
+            <td class="text-center"><a id="board-move-{{move['move_id']}}" href="javascript:(void)" title=" ">{{move['move']}}</a><br>{{move['score']}} ({{move['score_diff']}})</td>
+            <!-- <td class="text-center"></td> -->
             {%if move['is_white'] == False%}<td></td>{% endif %}
-            <td>{%if move['top_moves']|length > 0 %}<a id="board-{{move['move_id']}}" href="javascript:(void)" title=" ">{{move['comment']}}</a>{% else %}{{move['comment']}}{% endif %}</td>
+            <td class="text-center {{move['comment_color']}}"><a id="board-top-{{move['move_id']}}" href="javascript:(void)" title=" ">{{move['comment']}}</a></td>
             {%if move['is_white'] == True%}<td></td>{% endif %}
-            <!--   
-            <td class="text-center">{{move['comment']}}</td>
-            <td></td>
-             -->
             {% for top_move in move['top_moves'] %}
-            <td>{{top_move['move']}}<br>({{top_move['score_diff']}})</td> 
+            <td class="text-center {{top_move['cell_color']}}">{{top_move['move']}}<br>{{top_move['score']}} ({{top_move['score_diff']}})</td> 
             {% endfor %}
         </tr>
         {% endfor %}
@@ -129,13 +147,14 @@
 
 <script>
     {% for move in moves %}
-      $("#board-{{move['move_id']}}").tooltip({ content: '<img src="/static/board-{{move['move_id']}}.svg" width=300/>' });
+      $("#board-move-{{move['move_id']}}").tooltip({ content: '<img src="/static/board-move-{{move['move_id']}}.svg" width=300/>' });
+      $("#board-top-{{move['move_id']}}").tooltip({ content: '<img src="/static/board-top-{{move['move_id']}}.svg" width=300/>' });
     {% endfor %}
 </script>
   
 
 <div class="container-fluid">
-    Analysis Time: {{render_time}} sec
+    Analysis Time: {{render_time}} secs
 </div>
 
 <!-- FontAwesome 6.1.1 CSS -->
