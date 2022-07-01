@@ -56,7 +56,7 @@ def gitupdate():
     os.kill(os.getpid(), signal.SIGINT)
     return "Restarting..."
 
-    # return redirect(url_for('index'))
+    ## return redirect(url_for('index'))
 
 
 
