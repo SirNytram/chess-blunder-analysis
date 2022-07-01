@@ -52,7 +52,7 @@ def index():
 
 @app.route("/gitupdate")
 def gitupdate():
-    # os.system('gitupdate.bat')
+    os.system('gitupdate.bat')
     os.kill(os.getpid(), signal.SIGINT)
     return "Restarting..."
 

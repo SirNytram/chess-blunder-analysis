@@ -1,5 +1,5 @@
 :loop
 
-py main.py
+py main.py debug
 
 goto loop
