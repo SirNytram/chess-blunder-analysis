@@ -70,9 +70,9 @@ class ChessNode():
                 # save images
                 arrowcolor = '#00FF00'   #green
                 if i == 1:
-                    arrowcolor = '#32CD32'   # darker green
+                    arrowcolor = '#9ACD32'  #'#32CD32'   # darker green
                 elif i == 2:
-                    arrowcolor = '#FFFF00'   # yellow
+                    arrowcolor = '#EAEA00' #'#FFFF00'   # yellow
                 elif i == 3:
                     arrowcolor = '#FFA500'   # orange
 
