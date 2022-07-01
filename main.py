@@ -28,7 +28,7 @@ app = Flask(__name__)
 
 # @app.route('/', methods=['POST'])
 # def root():
-#     pgn = request.form['pgn']
+#     pgn = request.form['pgn'] 
 #     detailed = request.form.get('detailed')
 #     think_time = request.form.get('think_time')
 #     return analyse_pgn(pgn, detailed, think_time)
