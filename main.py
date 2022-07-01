@@ -36,7 +36,7 @@ app = Flask(__name__)
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['username'].strip()
         action = request.form['action']
 
         if action == 'games':
