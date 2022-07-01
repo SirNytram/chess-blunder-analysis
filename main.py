@@ -54,7 +54,8 @@ def index():
 def gitupdate():
     os.system('gitupdate.bat')
     os.kill(os.getpid(), signal.SIGINT)
-    return "Restarting..."
+    raise RuntimeError('Shutting Down...')
+    return "..."
 
     ## return redirect(url_for('index'))
 
