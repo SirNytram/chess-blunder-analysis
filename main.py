@@ -10,7 +10,7 @@ from chess import pgn, engine, svg
 import time
 import urllib
 from chessnode import ChessGame, ChessNode
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 DEFAULT_THINK_TIME_VIEW = 0.01
@@ -24,7 +24,7 @@ app.secret_key = 'mart is great'
 @app.before_request
 def before_request():
     session.permanent = True
-    # app.permanent_session_lifetime = datetime.timedelta(days=20)
+    app.permanent_session_lifetime = timedelta(days=730)
     session.modified = True
     
 
