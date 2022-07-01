@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="shortcut icon" href="/static/favicon.ico">
 
 
     <!-- Bootstrap CSS v5.2.0-beta1 -->
@@ -20,16 +21,16 @@
       
     <nav class="navbar navbar-light bg-light fixed-top">
         <div class="container-fluid">
-          <a class="navbar-brand">Chess Analysis</a>
-          <form class="d-flex">
-            <input class="form-control me-2" type="search" placeholder="chess.com User Name" aria-label="Search" value="{{user}}">
+          <a class="navbar-brand" href="/">Chess Analysis</a>
+          <form action="/" lass="d-flex" method="POST">
+            <input name="username" class="form-control me-2" type="search" placeholder="chess.com User Name" aria-label="Search" value="{{user}}">
             <div class="btn-group">
-              <a name="" id="" class="btn btn-secondary text-nowrap" href="/games/{{user}}" role="button">View Games</a>
-              <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button type="submit"  name="action" value='games' class="btn btn-primary text-nowrap">View Games</button>
+              <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="visually-hidden">Toggle Dropdown</span>
               </button>
               <div class="dropdown-menu">
-                <a class="dropdown-item" href="/game/{{user}}">View Last Game</a>
+                <button type="submit" name="action" value='last_game' class="btn dropdown-item btn-primary">View Last Game</button>
               </div>
             </div>
           </form>

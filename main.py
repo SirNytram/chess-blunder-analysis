@@ -33,22 +33,22 @@ app = Flask(__name__)
 #     return analyse_pgn(pgn, detailed, think_time)
 
 
-@app.route('/')
-def root():
-    return render_template('index.html', )
-
-
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['POST', 'GET'])
 def index():
-    username = request.form['username']
-    action = request.form['action']
+    if request.method == 'POST':
+        username = request.form['username']
+        action = request.form['action']
 
-    if action == 'games':
-        return view_games(username )
-    elif action == 'last_game':
-        return analyse_game(username )
+        if action == 'games':
+            return view_games(username )
+        elif action == 'last_game':
+            return analyse_game(username )
+        else:
+            return render_template('index.html')
+
     else:
         return render_template('index.html')
+
 
 @app.route("/gitupdate")
 def gitupdate():
