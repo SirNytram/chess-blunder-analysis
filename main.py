@@ -3,7 +3,7 @@ from calendar import month
 from concurrent.futures import process
 from flask import Flask, request, render_template, redirect, url_for
 # import pyperclip
-import os, signal, json
+import os, signal, json, io
 import chess
 from chess import pgn, engine, svg
 import time
@@ -194,14 +194,22 @@ def view_games(user, month_index=0):
         if cur_game[user_color]['result'] == 'win':
             color = 'table-success'
 
-        moves = 0
-        
+        game_moves = 0.0
+        for move in chess.pgn.read_game(io.StringIO(cur_game['pgn'])).mainline_moves():
+            game_moves += 1
+
+
+        if 'end_time' in cur_game:
+            game_date = datetime.fromtimestamp(cur_game['end_time']).strftime("%m/%d<br>%H:%M")
+        else:
+            game_date = ''
+
         games.append({
             'color': color,
-            'players': f"{cur_game['white']['username']} ({cur_game['white']['rating']})<br>{cur_game['black']['username']} ({cur_game['black']['rating']})",
+            'players': f"{cur_game['white']['username']} ({cur_game['white']['rating']}) - {cur_game['white']['result']}<br>{cur_game['black']['username']} ({cur_game['black']['rating']}) - {cur_game['black']['result']}",
             'result': f"{cur_game[user_color]['result']}",
-            'moves': f"{cur_game['fen'].split()[-1]}",
-            'date':'',
+            'moves': f"{round((game_moves + .1)/2.0)}",
+            'date': game_date,
             'game_id':f'{month_index}/{i}',
         })
     

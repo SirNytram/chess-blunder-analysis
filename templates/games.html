@@ -21,7 +21,7 @@
       <nav class="navbar navbar-light bg-light fixed-top">
         <div class="container-fluid">
           <a class="navbar-brand" href="/">Chess Analysis</a>
-          <form class="d-flex" method="POST">
+          <form action="/" class="d-flex" method="POST">
             <input name="username" class="form-control me-2" type="search" placeholder="chess.com User Name" aria-label="Search" value="{{user}}">
             <div class="btn-group">
               <button type="submit"  name="action" value='games' class="btn btn-primary text-nowrap">View Games</button>
@@ -49,7 +49,6 @@
             <thead>
                 <tr>
                     <th>Players</th>
-                    <th>Result</th>
                     <th>Moves</th>
                     <th>Date</th>
                     <th>Actions</th>
@@ -59,9 +58,9 @@
               {% for game in games %}
                 <tr class="{{game['color']}}">
                     <td scope="row">{{game['players']|safe}}</td>
-                    <td>{{game['result']}}</td>
+                    <!-- <td>{{game['result']}}</td> -->
                     <td>{{game['moves']}}</td>
-                    <td>{{game['date']}}</td>
+                    <td>{{game['date']|safe}}</td>
                     <td><a name="" id="" class="btn btn-primary me-1" href="/game/{{user}}/{{game['game_id']}}/view" role="button" onclick="loading(1);">View</a><a name="" id="" class="btn btn-primary me-1" href="/game/{{user}}/{{game['game_id']}}/analyse" role="button" onclick="loading(2);">Analyse</a></td></tr>
               {% endfor %}
 
