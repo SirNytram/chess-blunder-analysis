@@ -57,7 +57,7 @@ def gitupdate():
     raise RuntimeError('Shutting Down...')
     return "..."
 
-    ## return redirect(url_for('index'))
+    # return redirect(url_for('index'))
 
 
 
