@@ -1,3 +1,4 @@
+import threading
 import sys
 from calendar import month
 from concurrent.futures import process
@@ -49,15 +50,17 @@ def index():
     else:
         return render_template('index.html')
 
+def shutdown():
+    time.sleep(1)
+    os.system('gitupdate.bat')
+    os.kill(os.getpid(), signal.SIGINT)
+
 
 @app.route("/gitupdate")
 def gitupdate():
-    os.system('gitupdate.bat')
-    os.kill(os.getpid(), signal.SIGINT)
-    raise RuntimeError('Shutting Down...')
-    return "..."
-
-    # return redirect(url_for('index'))
+    # return "Restarting"
+    threading.Thread(target=shutdown).start()
+    return redirect(url_for('index'))
 
 
 
