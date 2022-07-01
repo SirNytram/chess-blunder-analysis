@@ -1,10 +1,14 @@
+#TODO view history of seacch
+#TODO log searches
+#TODO board files in separate fodlers
+
 import threading
 import sys
 from calendar import month
 from concurrent.futures import process
 from flask import Flask, request, render_template, redirect, url_for, session
 # import pyperclip
-import os, signal, json, io
+import os, signal, json, io, tempfile, pathlib
 import chess
 from chess import pgn, engine, svg
 import time
@@ -37,16 +41,18 @@ def index():
         action = request.form['action']
 
         if action == 'games':
-            return view_games(username )
+            return redirect(f'/games/{username}')
+            # return view_games(username )
         elif action == 'last_game':
-            return analyse_game(username )
+            return redirect(f'/game/{username}' )
         else:
-            return render_template('index.html')
+            return redirect('/')
 
     else:
         username = ''
         if 'username' in session:
             username = session['username']
+
         return render_template('index.html', user=username)
 
 def shutdown():
@@ -68,6 +74,19 @@ def gitupdate():
 def analyse_game(user, month_index=0, game_index=0, action='view'):
     start_time = time.time() #datetime.now()
     print(f'Preparing data. {datetime.now()}')
+
+    if 'uuid' not in session:
+        os.makedirs('static/boards', exist_ok=True)
+        path = pathlib.Path(tempfile.mkdtemp(dir='static/boards'))
+        session['uuid'] = path.name
+            
+    cur_uuid = session['uuid']
+    path = f'static/boards/{cur_uuid}/'
+    for f in os.listdir(path):
+        curfile = f'{path}{f}'
+        if os.path.isfile(curfile):
+            os.remove(curfile)
+    
 
     month_index = int(month_index)
     game_index = int(game_index)
@@ -134,12 +153,12 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
         if node.prev_chessnode:
             img_arrows.append(chess.svg.Arrow(node.node.move.from_square, node.node.move.to_square, color = '#FF0000'))
             board_img = chess.svg.board(node.prev_chessnode.node.board(), arrows= img_arrows, size=350)
-            f = open(f'static\\board-top-{int(move_id)}.svg', 'w')
+            f = open(f'static\\boards\\{cur_uuid}\\top-{int(move_id)}.svg', 'w')
             f.write(board_img)
             f.close()
 
             board_img = chess.svg.board(node.prev_chessnode.node.board(), arrows= [chess.svg.Arrow(node.node.move.from_square, node.node.move.to_square, color = '#0000FF')], size=350)
-            f = open(f'static\\board-move-{int(move_id)}.svg', 'w')
+            f = open(f'static\\boards\\{cur_uuid}\\move-{int(move_id)}.svg', 'w')
             f.write(board_img)
             f.close()
 
@@ -163,7 +182,7 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
     
     render_time=F'{time.time() - start_time:.1f}'
     print(f'Render time: {render_time} ')
-    return render_template('analyse.html', user=user, game_id=game_id, graph_title=graph_title, moves=moves, render_time=render_time)
+    return render_template('analyse.html', user=user, game_id=game_id, graph_title=graph_title, moves=moves, render_time=render_time, uuid=cur_uuid)
 
 
 

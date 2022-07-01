@@ -148,8 +148,8 @@
 
 <script>
     {% for move in moves %}
-      $("#board-move-{{move['move_id']}}").tooltip({ content: '<img src="/static/board-move-{{move['move_id']}}.svg" width=300/>' });
-      $("#board-top-{{move['move_id']}}").tooltip({ content: '<img src="/static/board-top-{{move['move_id']}}.svg" width=300/>' });
+      $("#board-move-{{move['move_id']}}").tooltip({ content: '<img src="/static/boards/{{uuid}}/move-{{move['move_id']}}.svg" width=300/>' });
+      $("#board-top-{{move['move_id']}}").tooltip({ content: '<img src="/static/boards/{{uuid}}/top-{{move['move_id']}}.svg" width=300/>' });
     {% endfor %}
 </script>
   
