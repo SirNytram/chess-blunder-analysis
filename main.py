@@ -1,13 +1,13 @@
+import sys
 from calendar import month
 from concurrent.futures import process
 from flask import Flask, request, render_template, redirect, url_for
 # import pyperclip
-import os
+import os, signal, json
 import chess
 from chess import pgn, engine, svg
 import time
 import urllib
-import json
 from chessnode import ChessGame, ChessNode
 from datetime import datetime
 
@@ -52,8 +52,11 @@ def index():
 
 @app.route("/gitupdate")
 def gitupdate():
-    os.system('gitupdate.bat')
-    return redirect(url_for('index'))
+    # os.system('gitupdate.bat')
+    os.kill(os.getpid(), signal.SIGINT)
+    return "Restarting..."
+
+    # return redirect(url_for('index'))
 
 
 
@@ -206,4 +209,7 @@ def view_games(user, month_index=0):
     return render_template('games.html', user=user, title_month=title_month, games=games, months=months)
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=5080)
+    if 'debug' in sys.argv:
+        app.run(debug=True, host='0.0.0.0', port=5080)
+    else:
+        app.run(debug=False, host='0.0.0.0', port=5080)
