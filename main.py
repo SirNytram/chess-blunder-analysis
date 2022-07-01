@@ -2,7 +2,7 @@ import threading
 import sys
 from calendar import month
 from concurrent.futures import process
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, session
 # import pyperclip
 import os, signal, json, io
 import chess
@@ -19,25 +19,21 @@ DEFAULT_THINK_DEPTH = 18
    
 
 app = Flask(__name__)
+app.secret_key = 'mart is great'
 
-
-# @app.route('/lastgame/<user>')
-# def analyse_last_game(user):
-#     return redirect(url_for('analyse', user=user, month_index=-1, game_index=-1))
-
-
-# @app.route('/', methods=['POST'])
-# def root():
-#     pgn = request.form['pgn'] 
-#     detailed = request.form.get('detailed')
-#     think_time = request.form.get('think_time')
-#     return analyse_pgn(pgn, detailed, think_time)
+@app.before_request
+def before_request():
+    session.permanent = True
+    # app.permanent_session_lifetime = datetime.timedelta(days=20)
+    session.modified = True
+    
 
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
         username = request.form['username'].strip()
+        session['username'] = username
         action = request.form['action']
 
         if action == 'games':
@@ -48,7 +44,10 @@ def index():
             return render_template('index.html')
 
     else:
-        return render_template('index.html')
+        username = ''
+        if 'username' in session:
+            username = session['username']
+        return render_template('index.html', user=username)
 
 def shutdown():
     time.sleep(1)
