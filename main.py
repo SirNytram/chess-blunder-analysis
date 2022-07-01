@@ -143,10 +143,12 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
             f.write(board_img)
             f.close()
 
-
+        graph_move_no = f'{int(node.move_no)}'
+        if not node.is_white:
+            graph_move_no = f'..{int(node.move_no)}'
         moves.append({
                 'move_id':move_id,
-                'graph_no':node.move_no,
+                'graph_no': graph_move_no, # node.move_no,
                 'graph_score':node.get_score_graph(),
                 'no':move_no_formatted,
                 'move':node.get_san(-1, True),
