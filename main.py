@@ -86,6 +86,25 @@ def gitupdate():
 
     return render_template('index.html', user=username, message=msg)
 
+@app.route("/viewlog")
+def viewlog():
+    add_log(f'viewlog')
+
+
+    msg = ''
+    f = open(LOG_FILE)
+    for line in f.readlines()[-100:]:
+        msg += line 
+    f.close()
+
+    username = ''
+    if 'username' in session:
+        username = session['username']
+
+    return render_template('index.html', user=username, message=msg)
+
+
+
 
 
 @app.route('/game/<user>')
