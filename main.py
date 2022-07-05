@@ -141,13 +141,11 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
     game.analyse(think_time= think_time, think_depth=think_depth)
     print(f'Preparing data. {datetime.now()}')
     game_id = f'{month_index}/{game_index}'
-    graph_title = f"{game.chessdotcom_game['white']['username']} ({game.chessdotcom_game['white']['rating']}) - {game.chessdotcom_game['white']['result']} vs {game.chessdotcom_game['black']['username']} ({game.chessdotcom_game['black']['rating']}) - {game.chessdotcom_game['black']['result']}"
-    
+    graph_title = f"{game.chessdotcom_game['white']['username']} ({game.chessdotcom_game['white']['rating']}) - {game.chessdotcom_game['white']['result']} vs {game.chessdotcom_game['black']['username']} ({game.chessdotcom_game['black']['rating']}) - {game.chessdotcom_game['black']['result']}" 
     
     user_is_white = True
     if game.chessdotcom_game['black']['username'] == user:
         user_is_white = False
-    
     
     moves = []
     for node in game.nodes:
