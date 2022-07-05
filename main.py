@@ -1,13 +1,15 @@
 #TODO view history of seacch
-#TODO flip board when use is black
-#TODO full analyse board after view
+#TODO use database to full analyse board after view
+#TODO differenciate suggestions quality
+#TODO show lines somewhere
+#TODO improve html to have chess board always shown (put comment under move, remove top moves text)
 import threading
 import sys
 from calendar import month
 from concurrent.futures import process
 from flask import Flask, request, render_template, redirect, url_for, session
 # import pyperclip
-import os, signal, json, io, tempfile, pathlib
+import os, signal, json, io, tempfile, pathlib, subprocess
 import chess
 from chess import pgn, engine, svg
 import time
@@ -67,17 +69,22 @@ def index():
         return render_template('index.html', user=username, message='')
 
 
-def shutdown():
+def shutdown_app():
     time.sleep(1)
-    os.system('gitupdate.bat')
     os.kill(os.getpid(), signal.SIGINT)
 
 @app.route("/gitupdate")
 def gitupdate():
     add_log(f'gitupdate')
     # return "Restarting"
-    threading.Thread(target=shutdown).start()
-    return redirect(url_for('index'))
+    msg = subprocess.getoutput('gitupdate.bat')
+    threading.Thread(target=shutdown_app).start()
+
+    username = ''
+    if 'username' in session:
+        username = session['username']
+
+    return render_template('index.html', user=username, message=msg)
 
 
 
@@ -167,12 +174,12 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
 
         if node.prev_chessnode:
             img_arrows.append(chess.svg.Arrow(node.node.move.from_square, node.node.move.to_square, color = '#FF0000'))
-            board_img = chess.svg.board(node.prev_chessnode.node.board(), arrows= img_arrows, size=350)
+            board_img = chess.svg.board(node.prev_chessnode.node.board(), arrows= img_arrows, size=350, flipped=not node.is_white)
             f = open(f'static\\boards\\{cur_uuid}\\top-{int(move_id)}.svg', 'w')
             f.write(board_img)
             f.close()
 
-            board_img = chess.svg.board(node.prev_chessnode.node.board(), arrows= [chess.svg.Arrow(node.node.move.from_square, node.node.move.to_square, color = '#0000FF')], size=350)
+            board_img = chess.svg.board(node.prev_chessnode.node.board(), arrows= [chess.svg.Arrow(node.node.move.from_square, node.node.move.to_square, color = '#0000FF')], size=350, flipped=not node.is_white)
             f = open(f'static\\boards\\{cur_uuid}\\move-{int(move_id)}.svg', 'w')
             f.write(board_img)
             f.close()
