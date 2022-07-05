@@ -6,3 +6,4 @@
 /*.pgn
 /vips*
 /static/boards/*
+/static/*.log

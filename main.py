@@ -1,7 +1,6 @@
 #TODO view history of seacch
-#TODO log searches
-#TODO board files in separate fodlers
-
+#TODO flip board when use is black
+#TODO full analyse board after view
 import threading
 import sys
 from calendar import month
@@ -20,10 +19,19 @@ from datetime import datetime, timedelta
 DEFAULT_THINK_TIME_VIEW = 0.01
 DEFAULT_THINK_TIME_ANALYSE = 0.1
 DEFAULT_THINK_DEPTH = 18
+LOG_FILE = 'static/chess-analysis.log'
    
 
 app = Flask(__name__)
 app.secret_key = 'mart is great'
+
+
+def add_log(message):
+    timestamp = datetime.now().strftime('%m/%d/%Y %H:%M:%S')
+    f = open(LOG_FILE, 'a')
+    line = f'{request.remote_addr} {timestamp} {message}\n'
+    f.write(line)
+    f.close()
 
 @app.before_request
 def before_request():
@@ -40,6 +48,8 @@ def index():
         session['username'] = username
         action = request.form['action']
 
+        add_log(f'root POST action:{action} username:{username}')
+
         if action == 'games':
             return redirect(f'/games/{username}')
             # return view_games(username )
@@ -53,16 +63,18 @@ def index():
         if 'username' in session:
             username = session['username']
 
-        return render_template('index.html', user=username)
+        add_log(f'root GET username:{username}')
+        return render_template('index.html', user=username, message='')
+
 
 def shutdown():
     time.sleep(1)
     os.system('gitupdate.bat')
     os.kill(os.getpid(), signal.SIGINT)
 
-
 @app.route("/gitupdate")
 def gitupdate():
+    add_log(f'gitupdate')
     # return "Restarting"
     threading.Thread(target=shutdown).start()
     return redirect(url_for('index'))
@@ -81,12 +93,15 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
         session['uuid'] = path.name
             
     cur_uuid = session['uuid']
+
+    add_log(f'game action: user:{user}, month_index:{month_index}, game_index:{game_index}, action:{action} uuid:{cur_uuid}')
+
+
     path = f'static/boards/{cur_uuid}/'
     for f in os.listdir(path):
         curfile = f'{path}{f}'
         if os.path.isfile(curfile):
             os.remove(curfile)
-    
 
     month_index = int(month_index)
     game_index = int(game_index)
@@ -189,6 +204,8 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
 @app.route('/games/<user>')
 @app.route('/games/<user>/<month_index>')
 def view_games(user, month_index=0):
+    add_log(f'games history user:{user} month_index:{month_index}')
+
     month_index = int(month_index)
     games = []
     months = []
