@@ -141,7 +141,14 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
     game.analyse(think_time= think_time, think_depth=think_depth)
     print(f'Preparing data. {datetime.now()}')
     game_id = f'{month_index}/{game_index}'
-    graph_title = f"{game.chessdotcom_game['white']['username']} ({game.chessdotcom_game['white']['rating']}) vs {game.chessdotcom_game['black']['username']} ({game.chessdotcom_game['black']['rating']})"
+    graph_title = f"{game.chessdotcom_game['white']['username']} ({game.chessdotcom_game['white']['rating']}) - {game.chessdotcom_game['white']['result']} vs {game.chessdotcom_game['black']['username']} ({game.chessdotcom_game['black']['rating']}) - {game.chessdotcom_game['black']['result']}"
+    
+    
+    user_is_white = True
+    if game.chessdotcom_game['black']['username'] == user:
+        user_is_white = False
+    
+    
     moves = []
     for node in game.nodes:
         top_moves = []
@@ -193,12 +200,12 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
 
         if node.prev_chessnode:
             img_arrows.append(chess.svg.Arrow(node.node.move.from_square, node.node.move.to_square, color = '#FF0000'))
-            board_img = chess.svg.board(node.prev_chessnode.node.board(), arrows= img_arrows, size=350, flipped=not node.is_white)
+            board_img = chess.svg.board(node.prev_chessnode.node.board(), arrows= img_arrows, size=350, flipped=not user_is_white)
             f = open(f'static\\boards\\{cur_uuid}\\top-{int(move_id)}.svg', 'w')
             f.write(board_img)
             f.close()
 
-            board_img = chess.svg.board(node.prev_chessnode.node.board(), arrows= [chess.svg.Arrow(node.node.move.from_square, node.node.move.to_square, color = '#0000FF')], size=350, flipped=not node.is_white)
+            board_img = chess.svg.board(node.prev_chessnode.node.board(), arrows= [chess.svg.Arrow(node.node.move.from_square, node.node.move.to_square, color = '#0000FF')], size=350, flipped=not user_is_white)
             f = open(f'static\\boards\\{cur_uuid}\\move-{int(move_id)}.svg', 'w')
             f.write(board_img)
             f.close()
