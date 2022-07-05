@@ -61,7 +61,9 @@
                     <!-- <td>{{game['result']}}</td> -->
                     <td>{{game['moves']}}</td>
                     <td>{{game['date']|safe}}</td>
-                    <td><a name="" id="" class="btn btn-primary me-1" href="/game/{{user}}/{{game['game_id']}}/view" role="button" onclick="loading(1);">View</a><a name="" id="" class="btn btn-primary me-1" href="/game/{{user}}/{{game['game_id']}}/analyse" role="button" onclick="loading(2);">Analyse</a></td></tr>
+                    <td><a name="" id="" class="btn btn-primary me-1" href="/game/{{user}}/{{game['game_id']}}/view" role="button" onclick="loading(1);">View</a>
+                      <!-- <a name="" id="" class="btn btn-primary me-1" href="/game/{{user}}/{{game['game_id']}}/analyse" role="button" onclick="loading(2);">Analyse</a> -->
+                    </td></tr>
               {% endfor %}
 
           </tbody>
