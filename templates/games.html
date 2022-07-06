@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" style="font-size: 12px;">
   <head>
-    <title>Chess Analysis</title>
+    <title>Analysis</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -20,28 +20,21 @@
       
       <nav class="navbar navbar-light bg-light fixed-top">
         <div class="container-fluid">
-          <a class="navbar-brand" href="/">Chess Analysis</a>
+          <a class="navbar-brand" href="/">♞ Analysis</a>
           <form action="/" class="d-flex" method="POST">
-            <input name="username" class="form-control me-2" type="search" placeholder="chess.com User Name" aria-label="Search" value="{{user}}">
-            <div class="btn-group">
-              <button type="submit"  name="action" value='games' class="btn btn-primary text-nowrap">View Games</button>
-              <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="visually-hidden">Toggle Dropdown</span>
-              </button>
-              <div class="dropdown-menu">
-                <button type="submit" name="action" value='last_game' class="btn dropdown-item btn-primary">View Last Game</button>
-              </div>
-            </div>
+            <input name="username" class="form-control me-2" style="width:125px"type="search" placeholder="chess.com User Name" aria-label="Search" value="{{user}}">
+            <button type="submit"  name="action" value='games' class="btn btn-primary text-nowrap me-2">All Games</button>
+            <button type="submit" name="action" value='last_game' class="btn btn-primary text-nowrap">Last Game</button>
           </form>
         </div>
       </nav>
 
-      <div id="loading1" style="padding-top: 50px; background-color: black;" class="container-fluid text-center">
+      <!-- <div id="loading1" style="padding-top: 50px; background-color: black;" class="container-fluid text-center">
         <img src="/static/loading.gif" onclick="loading(0);"> 
       </div>
       <div id="loading2" style="padding-top: 50px; background-color: black;" class="container-fluid text-center">
         <img src="/static/loading-knights.gif" onclick="loading(0);"> 
-      </div>
+      </div> -->
       <div id="content" style="padding-top: 50px">
   
         <h4>Games for {{title_month}}</h4>
@@ -100,7 +93,7 @@
       </div>
 
 
-      <script>
+      <!-- <script>
         function loading(no){
           if (no == 0) {
             $("#loading1").hide();
@@ -117,7 +110,7 @@
       window.addEventListener("pageshow", () => {
          loading(0);
       });
-  </script>
+  </script> -->
 
         
     <!-- Bootstrap JavaScript Libraries -->
