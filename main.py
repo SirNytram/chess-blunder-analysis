@@ -40,7 +40,27 @@ def before_request():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(days=730)
     session.modified = True
-    
+
+def return_index(msg=''):
+    username = ''
+    if 'username' in session:
+        username = session['username']
+
+    is_admin = False
+    if 'is_admin' in session:
+        is_admin = session['is_admin']
+
+    return render_template('index.html', user=username, message=msg, is_admin=is_admin)
+
+
+@app.route('/admin', methods=['POST', 'GET'])
+def admin():
+    if 'is_admin' in session:
+        session.pop('is_admin')
+        return return_index('admin removed')
+    else:
+        session['is_admin']=True
+        return return_index('admin set')
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -58,15 +78,10 @@ def index():
         elif action == 'last_game':
             return redirect(f'/game/{username}' )
         else:
-            return redirect('/')
+            return return_index()
 
     else:
-        username = ''
-        if 'username' in session:
-            username = session['username']
-
-        add_log(f'root GET username:{username}')
-        return render_template('index.html', user=username, message='')
+        return return_index()
 
 
 def shutdown_app():
@@ -97,20 +112,18 @@ def viewlog():
         msg += line 
     f.close()
 
-    username = ''
-    if 'username' in session:
-        username = session['username']
-
-    return render_template('index.html', user=username, message=msg)
-
-
-
+    return return_index(msg)
 
 
 @app.route('/game/<user>')
 @app.route('/game/<user>/<month_index>/<game_index>/<action>')
 def analyse_game(user, month_index=0, game_index=0, action='view'):
     start_time = time.time() #datetime.now()
+
+    is_admin = False
+    if 'is_admin' in session:
+        is_admin = session['is_admin']
+
     print(f'Preparing data. {datetime.now()}')
 
     if 'uuid' not in session:
@@ -228,7 +241,7 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
     
     render_time=F'{time.time() - start_time:.1f}'
     print(f'Render time: {render_time} ')
-    return render_template('analyse.html', user=user, game_id=game_id, graph_title=graph_title, moves=moves, render_time=render_time, uuid=cur_uuid)
+    return render_template('analyse.html', user=user, game_id=game_id, graph_title=graph_title, moves=moves, render_time=render_time, uuid=cur_uuid, is_admin=is_admin)
 
 
 
@@ -236,6 +249,10 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
 @app.route('/games/<user>/<month_index>')
 def view_games(user, month_index=0):
     add_log(f'games history user:{user} month_index:{month_index}')
+
+    is_admin = False
+    if 'is_admin' in session:
+        is_admin = session['is_admin']
 
     month_index = int(month_index)
     games = []
@@ -286,7 +303,7 @@ def view_games(user, month_index=0):
     
 
 
-    return render_template('games.html', user=user, title_month=title_month, games=games, months=months)
+    return render_template('games.html', user=user, title_month=title_month, games=games, months=months, is_admin=is_admin)
 
 if __name__ == '__main__':
     if 'debug' in sys.argv:
