@@ -121,23 +121,27 @@ class ChessNode():
                 score = self.get_score_str(-1)            
 
         else:
-            # prev_score = self.get_score_str(0) #self.prev_chessnode.get_score_str(no)
-            prev_score = '0.0'
-            if self.prev_chessnode:
-                prev_score = self.prev_chessnode.get_score_str(-1)
-
-            score = self.get_score_str(no)
-
-            if score[0] == 'M':
-                return score
+            if no == 0:
+                score = 0
             else:
-                if prev_score[0] == 'M':
+                # return  self.get_score_int(no) - self.get_score_int
+            # prev_score = self.get_score_str(0) #self.prev_chessnode.get_score_str(no)
+                # prev_score = '0.0'
+                # if self.prev_chessnode:
+                prev_score = self.get_score_str(0)
+
+                score = self.get_score_str(no)
+
+                if score[0] == 'M':
                     return score
                 else:
-                    score = float(score)
-                    prev_score = float(prev_score)
-                    score = f'{score - prev_score:.1f}'
-   
+                    if prev_score[0] == 'M':
+                        return score
+                    else:
+                        score = float(score)
+                        prev_score = float(prev_score)
+                        score = f'{score-prev_score:.1f}'
+    
         return score
 
     def get_score_str(self, no=-1):

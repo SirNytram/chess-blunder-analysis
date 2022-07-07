@@ -150,6 +150,10 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
     if action == 'analyse':
         think_time = DEFAULT_THINK_TIME_ANALYSE
         # think_depth = DEFAULT_THINK_DEPTH
+    
+    can_clear = True
+    if '-noclear'in action:
+        can_clear = False
 
     game.analyse(think_time= think_time, think_depth=think_depth)
     print(f'Preparing data. {datetime.now()}')
@@ -166,26 +170,7 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
         img_arrows = []
 
         user_move = node.get_san(-1, True)
-        for suggestion in node.get_suggestions(True):
-            # line = f"{line}    {suggestion['san']} {suggestion['score_str']} ({suggestion['score_diff']})"
 
-            cur_sug_move = suggestion['san']
-            cell_color = ''
-            if user_move == cur_sug_move:
-                cell_color = 'table-primary'
-
-            top_moves.append({
-                'move': cur_sug_move,
-                'score':suggestion['score_str'],
-                'score_diff':suggestion['score_diff'],
-                'cell_color':cell_color,
-            })
-
-            img_arrows.append(chess.svg.Arrow(suggestion['from_square'], suggestion['to_square'], color = suggestion['arrow_color']))
-         
-        move_no_formatted = f'{node.move_no:.0f}'
-        if node.move_no % 1 != 0:
-            move_no_formatted = ''
 
         comment = ''
         comment_color = ''
@@ -196,15 +181,88 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
         if score_diff[0] != 'M':
             score_diff = float(score_diff) * mult
 
-            if score_diff < -4.50:
+            if score_diff <= -4.0:
                     comment= f'Blunder'
                     comment_color = 'table-danger'
             elif score_diff < -1.40:
                     comment= f'Mistake'
+                    comment_color = 'table-warning'
             elif score_diff < -0.80:
                     comment= f'??'
         else:
+            mate_score = mult * int(score_diff[1:])
+            if mate_score < 0:
+                comment_color = 'table-danger'
+                comment = 'Blunder'
+            else:
+                comment = 'MATE'
+                comment_color = 'table-success'
+
+        if 'M' in node.get_score_str() and comment == '':
             comment = 'MATE'
+
+        move_color = ''
+        best_move = False
+        good_move = False
+        has_top_mate = False
+
+        for i, suggestion in enumerate(node.get_suggestions(True)):
+            # line = f"{line}    {suggestion['san']} {suggestion['score_str']} ({suggestion['score_diff']})"
+
+            cur_sug_move = suggestion['san']
+            cell_color = ''
+            if user_move == cur_sug_move:
+                # cell_color = 'table-primary'
+                if i == 0:
+                    best_move = True
+                else:
+                    good_move = True
+                # elif i == 1:
+                #     move_color = 'bg-success'
+                # elif i == 2:
+                #     move_color = 'table-warning'
+                # elif i == 3:
+                #     move_color = 'bg-warning'
+
+            if 'M' in suggestion['score_str']:
+                has_top_mate = True
+
+            score_diff_txt = ''
+            if i != 0:
+                score_diff_txt = f"({suggestion['score_diff']})"
+            
+            
+            top_moves.append({
+                'move': cur_sug_move,
+                'score':suggestion['score_str'],
+                'score_diff_txt':score_diff_txt,
+                'cell_color':cell_color,
+            })
+
+            img_arrows.append(chess.svg.Arrow(suggestion['from_square'], suggestion['to_square'], color = suggestion['arrow_color']))
+
+
+        if best_move:
+             if can_clear:
+                top_moves.clear()
+             comment = 'Best' 
+             comment_color = 'table-success'
+
+        if (comment == '' or comment == 'Mistake') and has_top_mate:
+            if 'M' not in node.get_score_str():
+                comment = 'Missed<br>MATE'
+                comment_color = 'table-danger'
+            else:
+                comment = 'MATE'
+        
+        if comment == '' and can_clear and not has_top_mate:
+            top_moves.clear()
+
+
+        move_no_formatted = f'{node.move_no:.0f}'
+        if node.move_no % 1 != 0:
+            move_no_formatted = ''
+
 
 
         move_id = int(node.move_no * 10)
@@ -228,8 +286,9 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
                 'move_id':move_id,
                 'graph_no': graph_move_no, # node.move_no,
                 'graph_score':node.get_score_graph(),
-                'no':move_no_formatted,
+                'no': move_no_formatted,
                 'move':node.get_san(-1, True),
+                'move_color':move_color,
                 'score_diff': node.get_score_diff(),
                 'score':node.get_score_str(),
                 'comment': comment,

@@ -101,8 +101,7 @@
         <tr>
             <th>No</th>
             <th class="text-center">Move</th>
-            <!-- <th class="text-center">Score</th> -->
-            <th class="">Comment<Br>white</th>
+            <th class="">white</th>
             <th>black</th>
             <th>Top Moves</th>
             <th></th>
@@ -113,14 +112,14 @@
     <tbody>
         {% for move in moves %}
         <tr class="align-middle">
-            <td scope="row">{{move['no']}}</td>
-            <td class="text-center"><a id="board-move-{{move['move_id']}}" href="javascript:(void)" title=" ">{{move['move']}}</a><br>{{move['score']}} ({{move['score_diff']}})</td>
+            <td class=""scope="row">{{move['no']}}</td>
+            <td class="text-center {{move['move_color']}}"><a id="board-move-{{move['move_id']}}" href="javascript:(void)" title=" ">{{move['move']}}</a><br>{{move['score']}} ({{move['score_diff']}})</td>
             <!-- <td class="text-center"></td> -->
             {%if move['is_white'] == False%}<td></td>{% endif %}
-            <td class="text-center {{move['comment_color']}}"><a id="board-top-{{move['move_id']}}" href="javascript:(void)" title=" ">{{move['comment']}}</a></td>
+            <td class="text-center {{move['comment_color']}}"><a id="board-top-{{move['move_id']}}" href="javascript:(void)" title=" ">{{move['comment']|safe}}</a></td>
             {%if move['is_white'] == True%}<td></td>{% endif %}
             {% for top_move in move['top_moves'] %}
-            <td class="text-center {{top_move['cell_color']}}">{{top_move['move']}}<br>{{top_move['score']}} ({{top_move['score_diff']}})</td> 
+            <td class="text-center {{top_move['cell_color']}}">{{top_move['move']}}<br>{{top_move['score']}} {{top_move['score_diff_txt']}}</td> 
             {% endfor %}
         </tr>
         {% endfor %}
