@@ -41,7 +41,7 @@ def before_request():
     app.permanent_session_lifetime = timedelta(days=730)
     session.modified = True
 
-def return_index(msg=''):
+def render_index(msg=''):
     username = ''
     if 'username' in session:
         username = session['username']
@@ -57,10 +57,10 @@ def return_index(msg=''):
 def admin():
     if 'is_admin' in session:
         session.pop('is_admin')
-        return return_index('admin removed')
+        return render_index('admin removed')
     else:
         session['is_admin']=True
-        return return_index('admin set')
+        return render_index('admin set')
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -78,10 +78,10 @@ def index():
         elif action == 'last_game':
             return redirect(f'/game/{username}' )
         else:
-            return return_index()
+            return render_index()
 
     else:
-        return return_index()
+        return render_index()
 
 
 def shutdown_app():
@@ -95,11 +95,7 @@ def gitupdate():
     msg = subprocess.getoutput('gitupdate.bat')
     threading.Thread(target=shutdown_app).start()
 
-    username = ''
-    if 'username' in session:
-        username = session['username']
-
-    return render_template('index.html', user=username, message=msg)
+    return render_index(msg)
 
 @app.route("/viewlog")
 def viewlog():
@@ -112,7 +108,7 @@ def viewlog():
         msg += line 
     f.close()
 
-    return return_index(msg)
+    return render_index(msg)
 
 
 @app.route('/game/<user>')
