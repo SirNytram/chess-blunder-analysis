@@ -213,35 +213,44 @@ def analyse_game(user, month_index=0, game_index=0, action='view', think_amount=
             # line = f"{line}    {suggestion['san']} {suggestion['score_str']} ({suggestion['score_diff']})"
 
             cur_sug_move = suggestion['san']
-            cell_color = ''
+            top_move_color = ''
             if user_move == cur_sug_move:
-                # cell_color = 'table-primary'
                 if i == 0:
                     best_move = True
                 else:
                     good_move = True
-                # elif i == 1:
-                #     move_color = 'bg-success'
-                # elif i == 2:
-                #     move_color = 'table-warning'
-                # elif i == 3:
-                #     move_color = 'bg-warning'
 
             if 'M' in suggestion['score_str']:
-                has_top_mate = True
+                if float(suggestion['score_str'][1:]) * mult > 0:
+                    top_move_color = 'table-info'
+                    has_top_mate = True
 
             score_diff_txt = ''
             if i != 0:
                 score_diff_txt = f"({suggestion['score_diff']})"
             
-            
+            if i == 1:
+                if suggestion['score_diff'][0] != 'M':
+                    if float(suggestion['score_diff']) * mult  < -3:
+                        top_moves[-1]['cell_color'] = 'table-primary'
+
+            if i == 2:
+                if suggestion['score_diff'][0] != 'M':
+                    if float(suggestion['score_diff']) * mult  < -3:
+                        if top_moves[-2]['cell_color'] == '':
+                            top_moves[-1]['cell_color'] = 'table-success'
+                            top_moves[-2]['cell_color'] = 'table-success'
+
+
+
             top_moves.append({
                 'move': cur_sug_move,
                 'score':suggestion['score_str'],
                 'score_diff_txt':score_diff_txt,
-                'cell_color':cell_color,
+                'cell_color':top_move_color,
             })
 
+            
             img_arrows.append(chess.svg.Arrow(suggestion['from_square'], suggestion['to_square'], color = suggestion['arrow_color']))
 
 
