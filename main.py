@@ -231,7 +231,7 @@ def analyse_game(user, month_index=0, game_index=0, action='view', think_amount=
             
             if i == 1:
                 if suggestion['score_diff'][0] != 'M':
-                    if float(suggestion['score_diff']) * mult  < -3:
+                    if float(suggestion['score_diff']) * mult  < -2.5:
                         top_moves[-1]['cell_color'] = 'table-primary'
 
             if i == 2:
