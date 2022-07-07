@@ -5,6 +5,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Bootstrap CSS v5.2.0-beta1 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"  integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
@@ -23,7 +24,7 @@
           <a class="navbar-brand" href="/">♞ Analysis</a>
           <form action="/" class="d-flex" method="POST">
             <input name="username" class="form-control me-2" style="width:120px"type="search" placeholder="chess.com User Name" aria-label="Search" value="{{user}}">
-            <button type="submit"  name="action" value='games' class="btn btn-primary text-nowrap me-2">All Games</button>
+            <button type="submit"  name="action" value='games' class="btn btn-info text-nowrap me-2">Profile</button>
             <div class="btn-group">
               <button type="submit"  name="action" value='last_game' class="btn btn-primary text-nowrap">Last Game</button>
               {% if is_admin %}
@@ -37,6 +38,43 @@
               {% endif %}
             </div>
           </form>
+          <div class="container" style="width:500px;">
+            <div class="row">
+            <canvas id="score-chart">        
+                <script>
+                    const labels = [
+                    {% for rating in ratings %}
+                    '{{rating['graph_date']}}',
+                    {% endfor %}
+                    ];
+                    
+                    const data = {
+                        labels: labels,
+                        datasets: [{
+                        label: '{{graph_title}}',
+                        backgroundColor: 'rgb(255, 255, 255)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        fill: false,
+                        data: [
+                        {% for rating in ratings %}
+                        {{rating['graph_rating']}},
+                        {% endfor %}
+                        ],
+                        }]
+                    };
+                    
+                    const config = {
+                        type: 'line',
+                        data: data,
+                        options: {}
+                    };
+    
+                    const score_chart = new Chart(document.getElementById('score-chart'),
+                        config
+                    );
+                </script>
+            </canvas>
+            </div>
         </div>
       </nav>
 
@@ -46,7 +84,7 @@
       <div id="loading2" style="padding-top: 50px; background-color: black;" class="container-fluid text-center">
         <img src="/static/loading-knights.gif" onclick="loading(0);"> 
       </div> -->
-      <div id="content" style="padding-top: 50px">
+      <div id="content" style="padding-top: 300px">
   
         <h4>Games for {{title_month}}</h4>
         <table class="table align-middle">
@@ -87,18 +125,9 @@
               {% for month in months %}
                 <tr>
                   <td scope="row">{{month['month']}}</td>
-                  <td><a name="" id="" class="btn btn-primary me-1 btn-info" href="/games/{{user}}/{{month['month_index']}}" role="button">View</a></td>
+                  <td><a name="" id="" class="btn btn-primary me-1 btn-info" href="/profile/{{user}}/{{month['month_index']}}" role="button">View</a></td>
                 </tr>
-              
               {% endfor %}
-                <!--<tr>
-                    <td scope="row">2022 05</td>
-                    <td><a name="" id="" class="btn btn-primary me-1 btn-info" href="/games/SirNytram/1" role="button">View Games</a></td>
-                </tr>
-                <tr>
-                  <td scope="row">2022 04</td>
-                  <td><a name="" id="" class="btn btn-primary me-1 btn-info" href="#" role="button">View Games</a></td>
-              </tr> -->
           </tbody>
         </table>
       </div>

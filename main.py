@@ -73,7 +73,7 @@ def index():
         add_log(f'root POST action:{action} username:{username}')
 
         if action == 'games':
-            return redirect(f'/games/{username}')
+            return redirect(f'/profile/{username}')
             # return view_games(username )
         elif action == 'last_game':
             return redirect(f'/game/{username}' )
@@ -300,9 +300,9 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
 
 
 
-@app.route('/games/<user>')
-@app.route('/games/<user>/<month_index>')
-def view_games(user, month_index=0):
+@app.route('/profile/<user>')
+@app.route('/profile/<user>/<month_index>')
+def profile(user, month_index=0):
     add_log(f'games history user:{user} month_index:{month_index}')
 
     is_admin = False
@@ -311,6 +311,7 @@ def view_games(user, month_index=0):
 
     month_index = int(month_index)
     games = []
+    ratings = []
     months = []
 
     archives_url = f'https://api.chess.com/pub/player/{user}/games/archives'
@@ -344,9 +345,12 @@ def view_games(user, month_index=0):
 
         if 'end_time' in cur_game:
             game_date = datetime.fromtimestamp(cur_game['end_time']).strftime("%m/%d<br>%H:%M")
+            graph_date = datetime.fromtimestamp(cur_game['end_time']).strftime("%m/%d %H:%M")
         else:
             game_date = ''
 
+        if i == 0:
+            graph_title = f"{cur_game[user_color]['username']} ({cur_game[user_color]['rating']})"
         games.append({
             'color': color,
             'players': f"{cur_game['white']['username']} ({cur_game['white']['rating']}) - {cur_game['white']['result']}<br>{cur_game['black']['username']} ({cur_game['black']['rating']}) - {cur_game['black']['result']}",
@@ -355,10 +359,15 @@ def view_games(user, month_index=0):
             'date': game_date,
             'game_id':f'{month_index}/{i}',
         })
-    
 
 
-    return render_template('games.html', user=user, title_month=title_month, games=games, months=months, is_admin=is_admin)
+        ratings.insert(0, {
+            'graph_rating': cur_game[user_color]['rating'],
+            'graph_date': graph_date
+        })
+
+
+    return render_template('games.html', user=user, title_month=title_month, games=games, months=months, is_admin=is_admin, graph_title=graph_title, ratings=ratings)
 
 if __name__ == '__main__':
     if 'debug' in sys.argv:
