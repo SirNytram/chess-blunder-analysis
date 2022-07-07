@@ -105,10 +105,10 @@ def viewlog():
     msg = ''
     f = open(LOG_FILE)
     for line in f.readlines()[-100:]:
-        msg += line 
+        msg = line + msg
     f.close()
 
-    return render_index(msg)
+    return render_index('\n' + msg)
 
 
 @app.route('/game/<user>')
