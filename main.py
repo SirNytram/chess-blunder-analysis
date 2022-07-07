@@ -18,9 +18,9 @@ from chessnode import ChessGame, ChessNode
 from datetime import datetime, timedelta
 
 
-DEFAULT_THINK_TIME_VIEW = 0.01
-DEFAULT_THINK_TIME_ANALYSE = 0.1
-DEFAULT_THINK_DEPTH = 18
+DEFAULT_THINK_TIME_VIEW = 0.02
+# DEFAULT_THINK_TIME_ANALYSE = 0.1
+DEFAULT_THINK_DEPTH_ANALYSE = 10
 LOG_FILE = 'static/chess-analysis.log'
    
 
@@ -113,7 +113,8 @@ def viewlog():
 
 @app.route('/game/<user>')
 @app.route('/game/<user>/<month_index>/<game_index>/<action>')
-def analyse_game(user, month_index=0, game_index=0, action='view'):
+@app.route('/game/<user>/<month_index>/<game_index>/<action>/<think_amount>')
+def analyse_game(user, month_index=0, game_index=0, action='view', think_amount=None):
     start_time = time.time() #datetime.now()
 
     is_admin = False
@@ -142,11 +143,17 @@ def analyse_game(user, month_index=0, game_index=0, action='view'):
     game_index = int(game_index)
     game = ChessGame(user, month_index, game_index)
     think_time = DEFAULT_THINK_TIME_VIEW
+    if think_amount:
+        think_time = float(think_amount)
     think_depth = None
-    if action == 'analyse':
-        think_time = DEFAULT_THINK_TIME_ANALYSE
-        # think_depth = DEFAULT_THINK_DEPTH
-    
+    if 'analyse' in action:
+        if think_amount:
+            think_time = None
+            think_depth = float(think_amount)
+        else:
+            think_time = None
+            think_depth = DEFAULT_THINK_DEPTH_ANALYSE
+
     can_clear = True
     if '-noclear'in action:
         can_clear = False
