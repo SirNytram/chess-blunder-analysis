@@ -242,6 +242,8 @@ def analyse_game(user, month_index=0, game_index=0, action='view', think_amount=
                             top_moves[-2]['cell_color'] = 'table-success'
 
 
+            if score_diff_txt != '' and score_diff_txt[1] == 'M':
+                score_diff_txt = ''
 
             top_moves.append({
                 'move': cur_sug_move,
@@ -255,10 +257,15 @@ def analyse_game(user, month_index=0, game_index=0, action='view', think_amount=
 
 
         if best_move:
-             if can_clear:
-                top_moves.clear()
-             comment = 'Best' 
-             comment_color = 'table-success'
+            if top_moves[0]['cell_color'] == 'table-primary':
+                comment = 'Great' 
+                comment_color = 'table-primary'
+            elif top_moves[0]['cell_color'] == 'table-info':
+                comment = 'Great<br>MATE' 
+                comment_color = 'table-info'
+            else:
+                comment = 'Best' 
+                comment_color = 'table-success'
 
         if (comment == '' or comment == 'Mistake') and has_top_mate:
             if 'M' not in node.get_score_str():
@@ -267,7 +274,14 @@ def analyse_game(user, month_index=0, game_index=0, action='view', think_amount=
             else:
                 comment = 'MATE'
         
-        if comment == '' and can_clear and not has_top_mate:
+        if comment == '' and can_clear:
+            top_moves.clear()
+
+        if 'Great' in comment and can_clear:
+            if 'MATE' not in comment:
+                top_moves.clear()
+
+        if 'Best' in comment and can_clear:
             top_moves.clear()
 
 
@@ -294,6 +308,8 @@ def analyse_game(user, month_index=0, game_index=0, action='view', think_amount=
         graph_move_no = f'{int(node.move_no)}'
         if not node.is_white:
             graph_move_no = f'..{int(node.move_no)}'
+
+
         moves.append({
                 'move_id':move_id,
                 'graph_no': graph_move_no, # node.move_no,
