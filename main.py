@@ -92,7 +92,7 @@ def shutdown_app():
 def gitupdate():
     add_log(f'gitupdate')
     # return "Restarting"
-    msg = subprocess.getoutput('gitupdate.bat')
+    msg = subprocess.getoutput('git.exe pull')
     threading.Thread(target=shutdown_app).start()
 
     return render_index(msg)
