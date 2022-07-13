@@ -99,8 +99,7 @@ def gitupdate():
 
 @app.route("/viewlog")
 def viewlog():
-    add_log(f'viewlog')
-
+    # add_log(f'viewlog')
 
     msg = ''
     f = open(LOG_FILE)
